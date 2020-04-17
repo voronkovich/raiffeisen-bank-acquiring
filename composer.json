@@ -1,0 +1,25 @@
+{
+    "name": "voronkovich/raiffeisen-bank-acquiring",
+    "description": "Raiffeisen Bank Russia acquiring",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oleg Voronkovich",
+            "email": "oleg-voronkovich@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": "^7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Voronkovich\\RaiffeisenBankAcquiring\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Voronkovich\\RaiffeisenBankAcquiring\\Tests\\": "tests/"
+        }
+    }
+}
