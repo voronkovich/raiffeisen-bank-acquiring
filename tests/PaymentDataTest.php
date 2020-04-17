@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\PaymentData;
 
 class PaymentDataTest extends TestCase
@@ -39,5 +40,24 @@ class PaymentDataTest extends TestCase
             'SuccessURL' => 'https://verycoolshop.abc/success',
             'FailURL' => 'https://verycoolshop.abc/fail',
         ]);
+    }
+
+    public function testThrowsAnExceptionIfRequiredParameterIsMissing()
+    {
+        $this->expectException(RequiredParameterMissingException::class);
+        $this->expectExceptionMessage('Required parameter "amount" is missing.');
+
+        $data = (new PaymentData())
+            ->setId(100)
+            ->setMerchantId('000001234567890-12345678')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
     }
 }

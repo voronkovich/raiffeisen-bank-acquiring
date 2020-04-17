@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring;
 
+use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
+
 class PaymentData
 {
     private $id;
@@ -89,6 +91,8 @@ class PaymentData
 
     public function getData(): array
     {
+        $this->checkRequiredParameters();
+
         return [
             'PurchaseDesc' => $this->id,
             'PurchaseAmt' => $this->amount,
@@ -101,5 +105,27 @@ class PaymentData
             'SuccessURL' => $this->successUrl,
             'FailURL' => $this->failUrl,
         ];
+    }
+
+    private function checkRequiredParameters(): void
+    {
+        $requiredParameters = [
+            'id',
+            'amount',
+            'merchantId',
+            'merchantName',
+            'merchantCountry',
+            'merchantCurrency',
+            'merchantCity',
+            'merchantUrl',
+            'successUrl',
+            'failUrl',
+        ];
+
+        foreach ($requiredParameters as $parameter) {
+            if (null === $this->$parameter || '' === $this->$parameter) {
+                throw new RequiredParameterMissingException($parameter);
+            }
+        }
     }
 }
