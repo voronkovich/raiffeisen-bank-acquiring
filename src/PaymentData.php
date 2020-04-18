@@ -16,6 +16,7 @@ class PaymentData
     private $merchantCurrency;
     private $merchantCity;
     private $merchantUrl;
+    private $terminalId;
     private $successUrl;
     private $failUrl;
 
@@ -68,6 +69,13 @@ class PaymentData
         return $this;
     }
 
+    public function setTerminalId(string $terminalId): self
+    {
+        $this->terminalId = $terminalId;
+
+        return $this;
+    }
+
     public function setMerchantUrl(string $merchantUrl): self
     {
         $this->merchantUrl = $merchantUrl;
@@ -96,7 +104,7 @@ class PaymentData
         return [
             'PurchaseDesc' => $this->id,
             'PurchaseAmt' => $this->amount,
-            'MerchantID' => $this->merchantId,
+            'MerchantID' => \sprintf('00000%s-%s', $this->merchantId, $this->terminalId),
             'MerchantName' => $this->merchantName,
             'CountryCode' => $this->merchantCountry,
             'CurrencyCode' => $this->merchantCurrency,
@@ -118,6 +126,7 @@ class PaymentData
             'merchantCurrency',
             'merchantCity',
             'merchantUrl',
+            'terminalId',
             'successUrl',
             'failUrl',
         ];

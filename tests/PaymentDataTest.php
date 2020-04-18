@@ -17,12 +17,13 @@ class PaymentDataTest extends TestCase
         $data = (new PaymentData())
             ->setId(100)
             ->setAmount('50.34')
-            ->setMerchantId('000001234567890-12345678')
+            ->setMerchantId('1689996001')
             ->setMerchantName('Very Cool Shop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
             ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
             ->setSuccessUrl('https://verycoolshop.abc/success')
             ->setFailUrl('https://verycoolshop.abc/fail')
             ->getData()
@@ -31,7 +32,7 @@ class PaymentDataTest extends TestCase
         $this->assertEquals($data, [
             'PurchaseDesc' => 100,
             'PurchaseAmt' => '50.34',
-            'MerchantID' => '000001234567890-12345678',
+            'MerchantID' => '000001689996001-89996001',
             'MerchantName' => 'Very Cool Shop',
             'CountryCode' => self::RUB,
             'CurrencyCode' => self::RUB,
@@ -49,12 +50,13 @@ class PaymentDataTest extends TestCase
 
         $data = (new PaymentData())
             ->setId(100)
-            ->setMerchantId('000001234567890-12345678')
+            ->setMerchantId('1689996001')
             ->setMerchantName('Very Cool Shop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
             ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
             ->setSuccessUrl('https://verycoolshop.abc/success')
             ->setFailUrl('https://verycoolshop.abc/fail')
             ->getData()
