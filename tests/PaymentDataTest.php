@@ -7,6 +7,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\PaymentData;
+use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
 class PaymentDataTest extends TestCase
 {
@@ -61,5 +62,26 @@ class PaymentDataTest extends TestCase
             ->setFailUrl('https://verycoolshop.abc/fail')
             ->getData()
         ;
+    }
+
+    public function testGeneratesSignatureIfGeneratorProvided()
+    {
+        $data = (new PaymentData())
+            ->setId(123)
+            ->setAmount('50.34')
+            ->setMerchantId('1689996001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->setSignatureGenerator(new SignatureGenerator('secret'))
+            ->getData()
+        ;
+
+        $this->assertSame('2eA1i9nuRCnn09VI4WRPFFtWs9kH2RHI8WZZOgnkYxg=', $data['HMAC']);
     }
 }

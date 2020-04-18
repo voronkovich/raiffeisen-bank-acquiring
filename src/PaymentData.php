@@ -19,6 +19,7 @@ class PaymentData
     private $terminalId;
     private $successUrl;
     private $failUrl;
+    private $signatureGenerator;
 
     public function setId($id): self
     {
@@ -97,11 +98,18 @@ class PaymentData
         return $this;
     }
 
+    public function setSignatureGenerator(SignatureGenerator $signatureGenerator): self
+    {
+        $this->signatureGenerator = $signatureGenerator;
+
+        return $this;
+    }
+
     public function getData(): array
     {
         $this->checkRequiredParameters();
 
-        return [
+        $data = [
             'PurchaseDesc' => $this->id,
             'PurchaseAmt' => $this->amount,
             'MerchantID' => \sprintf('00000%s-%s', $this->merchantId, $this->terminalId),
@@ -113,6 +121,12 @@ class PaymentData
             'SuccessURL' => $this->successUrl,
             'FailURL' => $this->failUrl,
         ];
+
+        if (null !== $this->signatureGenerator) {
+            $data['HMAC'] = $this->generateSignature();
+        }
+
+        return $data;
     }
 
     private function checkRequiredParameters(): void
@@ -136,5 +150,15 @@ class PaymentData
                 throw new RequiredParameterMissingException($parameter);
             }
         }
+    }
+
+    private function generateSignature(): string
+    {
+        return \base64_encode($this->signatureGenerator->base(
+            $this->merchantId,
+            $this->terminalId,
+            $this->id,
+            $this->amount
+        ));
     }
 }
