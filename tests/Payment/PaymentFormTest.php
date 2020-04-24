@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
 
-use Voronkovich\RaiffeisenBankAcquiring\PaymentForm;
 use PHPUnit\Framework\TestCase;
+use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentForm;
 
 class PaymentFormTest extends TestCase
 {

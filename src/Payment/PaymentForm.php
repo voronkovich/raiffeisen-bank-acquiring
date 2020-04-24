@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring;
+namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
 class PaymentForm
 {

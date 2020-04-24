@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
+namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
-use Voronkovich\RaiffeisenBankAcquiring\PaymentData;
+use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentData;
 use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
 class PaymentDataTest extends TestCase

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring;
+namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
+use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
 class PaymentData
 {
