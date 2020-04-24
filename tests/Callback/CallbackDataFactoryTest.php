@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
+namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Callback;
 
 use PHPUnit\Framework\TestCase;
-use Voronkovich\RaiffeisenBankAcquiring\CallbackDataFactory;
-use Voronkovich\RaiffeisenBankAcquiring\CallbackPaymentData;
-use Voronkovich\RaiffeisenBankAcquiring\CallbackReversalData;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackDataFactory;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackPaymentData;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackReversalData;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackException;
 

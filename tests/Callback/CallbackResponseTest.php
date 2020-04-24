@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
+namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Callback;
 
-use Voronkovich\RaiffeisenBankAcquiring\CallbackResponse;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackResponse;
 use PHPUnit\Framework\TestCase;
 
 class CallbackResponseTest extends TestCase
