@@ -20,6 +20,7 @@ class PaymentData
     private $terminalId;
     private $successUrl;
     private $failUrl;
+    private $language;
     private $signatureGenerator;
 
     public function setId($id): self
@@ -99,6 +100,13 @@ class PaymentData
         return $this;
     }
 
+    public function setLanguage(string $language): self
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
     public function setSignatureGenerator(SignatureGenerator $signatureGenerator): self
     {
         $this->signatureGenerator = $signatureGenerator;
@@ -122,6 +130,10 @@ class PaymentData
             'SuccessURL' => $this->successUrl,
             'FailURL' => $this->failUrl,
         ];
+
+        if (null !== $this->language) {
+            $data['Language'] = Language::fromIsoCode($this->language);
+        }
 
         if (null !== $this->signatureGenerator) {
             $data['HMAC'] = $this->generateSignature();

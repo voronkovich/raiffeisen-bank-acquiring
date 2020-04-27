@@ -84,4 +84,25 @@ class PaymentDataTest extends TestCase
 
         $this->assertSame('2eA1i9nuRCnn09VI4WRPFFtWs9kH2RHI8WZZOgnkYxg=', $data['HMAC']);
     }
+
+    public function testSetsInterfaceLanguage()
+    {
+        $data = (new PaymentData())
+            ->setId(123)
+            ->setAmount('50.34')
+            ->setMerchantId('1689996001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->setLanguage('en')
+            ->getData()
+        ;
+
+        $this->assertEquals('02', $data['Language']);
+    }
 }
