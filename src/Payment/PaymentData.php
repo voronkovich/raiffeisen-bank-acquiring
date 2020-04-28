@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
+use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
@@ -30,7 +31,7 @@ class PaymentData
         return $this;
     }
 
-    public function setAmount(string $amount): self
+    public function setAmount(int $amount): self
     {
         $this->amount = $amount;
 
@@ -120,7 +121,7 @@ class PaymentData
 
         $data = [
             'PurchaseDesc' => $this->id,
-            'PurchaseAmt' => $this->amount,
+            'PurchaseAmt' => AmountConverter::forPayment()->minorToFormatted($this->amount),
             'MerchantID' => \sprintf('00000%s-%s', $this->merchantId, $this->terminalId),
             'MerchantName' => $this->merchantName,
             'CountryCode' => $this->merchantCountry,
@@ -171,7 +172,7 @@ class PaymentData
             $this->merchantId,
             $this->terminalId,
             $this->id,
-            $this->amount
+            AmountConverter::forPayment()->minorToFormatted($this->amount)
         ));
     }
 }

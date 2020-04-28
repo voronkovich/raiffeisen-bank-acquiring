@@ -14,7 +14,7 @@ abstract class CallbackData
     private $date;
     private $result;
 
-    public function __construct(string $id, string $amount, string $transactionId, \DateTime $date, string $result)
+    public function __construct(string $id, int $amount, string $transactionId, \DateTime $date, string $result)
     {
         $this->id = $id;
         $this->amount = $amount;
@@ -28,7 +28,7 @@ abstract class CallbackData
         return $this->id;
     }
 
-    public function getAmount(): string
+    public function getAmount(): int
     {
         return $this->amount;
     }

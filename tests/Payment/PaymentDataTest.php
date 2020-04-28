@@ -17,7 +17,7 @@ class PaymentDataTest extends TestCase
     {
         $data = (new PaymentData())
             ->setId(100)
-            ->setAmount('50.34')
+            ->setAmount(5034)
             ->setMerchantId('1689996001')
             ->setMerchantName('Very Cool Shop')
             ->setMerchantCountry(self::RUB)
@@ -68,7 +68,7 @@ class PaymentDataTest extends TestCase
     {
         $data = (new PaymentData())
             ->setId(123)
-            ->setAmount('50.34')
+            ->setAmount(5034)
             ->setMerchantId('1689996001')
             ->setMerchantName('Very Cool Shop')
             ->setMerchantCountry(self::RUB)
@@ -89,7 +89,7 @@ class PaymentDataTest extends TestCase
     {
         $data = (new PaymentData())
             ->setId(123)
-            ->setAmount('50.34')
+            ->setAmount(5034)
             ->setMerchantId('1689996001')
             ->setMerchantName('Very Cool Shop')
             ->setMerchantCountry(self::RUB)

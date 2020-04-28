@@ -30,7 +30,7 @@ class CallbackDataFactoryTest extends TestCase
 
         $this->assertInstanceOf(CallbackPaymentData::class, $payment);
         $this->assertEquals('12343498', $payment->getId());
-        $this->assertEquals('234,33', $payment->getAmount());
+        $this->assertEquals(23433, $payment->getAmount());
         $this->assertEquals('4873558', $payment->getTransactionId());
         $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $payment->getDate());
         $this->assertTrue($payment->isSuccessfull());
@@ -53,7 +53,7 @@ class CallbackDataFactoryTest extends TestCase
 
         $this->assertInstanceOf(CallbackReversalData::class, $reversal);
         $this->assertEquals('123456789', $reversal->getId());
-        $this->assertEquals('100,10', $reversal->getAmount());
+        $this->assertEquals('10010', $reversal->getAmount());
         $this->assertEquals('4873558', $reversal->getTransactionId());
         $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $reversal->getDate());
         $this->assertTrue($reversal->isSuccessfull());

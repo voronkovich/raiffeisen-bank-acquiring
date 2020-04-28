@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
+use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 
 class CallbackDataFactory
@@ -17,11 +18,13 @@ class CallbackDataFactory
             throw new InvalidCallbackDataException('Callback parameter "type" is not defined.');
         }
 
+        $amount = AmountConverter::forCallback()->formattedToMinor($data['amt']);
+
         switch ($data['type']) {
             case self::TYPE_PAYMENT:
                 return new CallbackPaymentData(
                     $data['descr'],
-                    $data['amt'],
+                    $amount,
                     $data['id'],
                     new \DateTime($data['date']),
                     $data['result']
@@ -30,7 +33,7 @@ class CallbackDataFactory
             case self::TYPE_REVERSAL:
                 return new CallbackReversalData(
                     $data['descr'],
-                    $data['amt'],
+                    $amount,
                     $data['id'],
                     new \DateTime($data['date']),
                     $data['result']
