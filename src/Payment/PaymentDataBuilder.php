@@ -6,7 +6,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
 use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
-use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class PaymentDataBuilder
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
+namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Signature;
 
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
-use Voronkovich\RaiffeisenBankAcquiring\SecretKey;
-use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SecretKey;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class SignatureGeneratorTest extends TestCase
 {

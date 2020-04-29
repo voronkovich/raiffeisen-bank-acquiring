@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
+namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Signature;
 
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
-use Voronkovich\RaiffeisenBankAcquiring\SecretKey;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SecretKey;
 
-class SecretKeyKeyTest extends TestCase
+class SecretKeyTest extends TestCase
 {
     /**
      * @testdox Can be instantiated from Base64 encoded string

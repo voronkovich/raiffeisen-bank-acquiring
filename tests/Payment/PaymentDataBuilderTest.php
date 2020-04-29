@@ -7,8 +7,8 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Payment;
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentDataBuilder;
-use Voronkovich\RaiffeisenBankAcquiring\SecretKey;
-use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SecretKey;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class PaymentDataBuilderTest extends TestCase
 {
