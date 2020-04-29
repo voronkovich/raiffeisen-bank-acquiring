@@ -6,16 +6,16 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
-use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentData;
+use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentDataBuilder;
 use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
-class PaymentDataTest extends TestCase
+class PaymentDataBuilderTest extends TestCase
 {
     private const RUB = 643;
 
     public function testCreatesDataForSimplePayment()
     {
-        $data = (new PaymentData())
+        $data = (new PaymentDataBuilder())
             ->setId(100)
             ->setAmount(5034)
             ->setMerchantId('1689996001')
@@ -49,7 +49,7 @@ class PaymentDataTest extends TestCase
         $this->expectException(RequiredParameterMissingException::class);
         $this->expectExceptionMessage('Required parameter "amount" is missing.');
 
-        $data = (new PaymentData())
+        $data = (new PaymentDataBuilder())
             ->setId(100)
             ->setMerchantId('1689996001')
             ->setMerchantName('Very Cool Shop')
@@ -66,7 +66,7 @@ class PaymentDataTest extends TestCase
 
     public function testGeneratesSignatureIfGeneratorProvided()
     {
-        $data = (new PaymentData())
+        $data = (new PaymentDataBuilder())
             ->setId(123)
             ->setAmount(5034)
             ->setMerchantId('1689996001')
@@ -87,7 +87,7 @@ class PaymentDataTest extends TestCase
 
     public function testSetsInterfaceLanguage()
     {
-        $data = (new PaymentData())
+        $data = (new PaymentDataBuilder())
             ->setId(123)
             ->setAmount(5034)
             ->setMerchantId('1689996001')

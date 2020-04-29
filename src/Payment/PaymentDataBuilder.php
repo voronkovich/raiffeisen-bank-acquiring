@@ -8,7 +8,7 @@ use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
-class PaymentData
+class PaymentDataBuilder
 {
     private $id;
     private $amount;
