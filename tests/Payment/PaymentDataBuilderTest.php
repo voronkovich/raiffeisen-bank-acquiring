@@ -7,6 +7,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Payment;
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentDataBuilder;
+use Voronkovich\RaiffeisenBankAcquiring\SecretKey;
 use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
 class PaymentDataBuilderTest extends TestCase
@@ -66,7 +67,9 @@ class PaymentDataBuilderTest extends TestCase
 
     public function testGeneratesSignatureIfGeneratorProvided()
     {
-        $signatureGenerator = new SignatureGenerator('secret');
+        // Base64 encoded 'secret' string
+        $key = SecretKey::fromBase64('c2VjcmV0');
+        $signatureGenerator = SignatureGenerator::useBase64Encoding($key);
 
         $data = (new PaymentDataBuilder($signatureGenerator))
             ->setId(123)
@@ -84,6 +87,31 @@ class PaymentDataBuilderTest extends TestCase
         ;
 
         $this->assertSame('2eA1i9nuRCnn09VI4WRPFFtWs9kH2RHI8WZZOgnkYxg=', $data['HMAC']);
+    }
+
+    public function testSupportsHexEncodedSignature()
+    {
+        // Base64 encoded 'secret' string
+        $key = SecretKey::fromBase64('c2VjcmV0');
+        $signatureGenerator = SignatureGenerator::useHexEncoding($key);
+
+        $data = (new PaymentDataBuilder($signatureGenerator))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setMerchantId('1689996001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
+
+        $this->assertStringContainsString('H', $data['Options']);
+        $this->assertSame('d9e0358bd9ee4429e7d3d548e1644f145b56b3d907d911c8f166593a09e46318', $data['HMAC']);
     }
 
     public function testSetsInterfaceLanguage()

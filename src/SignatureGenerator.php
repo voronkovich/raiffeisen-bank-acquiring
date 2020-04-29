@@ -8,33 +8,45 @@ use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
 
 class SignatureGenerator
 {
+    public const BASE64 = 'base64';
+    public const HEX = 'hex';
+
     private $key;
+    private $encoding;
 
-    public static function fromBase64(string $base64EncodedKey): self
+    public static function useBase64Encoding(SecretKey $key): self
     {
-        $key = @\base64_decode($base64EncodedKey, true);
-
-        if (false === $key) {
-            throw new InvalidArgumentException('Provided key is not base64-encoded.');
-        }
-
-        return new self($key);
+        return new self($key, self::BASE64);
     }
 
-    public static function fromHex(string $hexEncodedKey): self
+    public static function useHexEncoding(SecretKey $key): self
     {
-        $key = @\hex2bin($hexEncodedKey);
-
-        if (false === $key) {
-            throw new InvalidArgumentException('Provided key is not hex-encoded.');
-        }
-
-        return new self($key);
+        return new self($key, self::HEX);
     }
 
-    public function __construct(string $key)
+    public function __construct(SecretKey $key, string $encoding)
     {
+        if (!\in_array($encoding, [ self::BASE64, self::HEX ])) {
+            throw new InvalidArgumentException(
+                'Invalid encoding: %s. Supported values: %s,  %s.',
+                $encoding,
+                self::BASE64,
+                self::HEX
+            );
+        }
+
         $this->key = $key;
+        $this->encoding = $encoding;
+    }
+
+    public function getKey(): SecretKey
+    {
+        return $this->key;
+    }
+
+    public function getEncoding(): string
+    {
+        return $this->encoding;
     }
 
     public function base(string $merchantId, string $terminalId, $paymentId, string $paymentAmount): string
@@ -44,6 +56,22 @@ class SignatureGenerator
 
     public function generate(array $chunks): string
     {
-        return \hash_hmac('sha256', \implode(';', $chunks), $this->key, true);
+        $signature = \hash_hmac('sha256', \implode(';', $chunks), $this->key->getValue(), true);
+
+        if ($this->isHexEncodingUsed()) {
+            return \bin2hex($signature);
+        }
+
+        return \base64_encode($signature);
+    }
+
+    public function isBase64EncodingUsed(): bool
+    {
+        return self::BASE64 === $this->encoding;
+    }
+
+    public function isHexEncodingUsed(): bool
+    {
+        return self::HEX === $this->encoding;
     }
 }

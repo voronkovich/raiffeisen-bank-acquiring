@@ -136,6 +136,10 @@ class PaymentDataBuilder
 
         if (null !== $this->signatureGenerator) {
             $data['HMAC'] = $this->generateSignature();
+
+            if ($this->signatureGenerator->isHexEncodingUsed()) {
+                $data['Options'] = 'H'.($data['Options'] ?? '');
+            }
         }
 
         return $data;
@@ -166,11 +170,11 @@ class PaymentDataBuilder
 
     private function generateSignature(): string
     {
-        return \base64_encode($this->signatureGenerator->base(
+        return $this->signatureGenerator->base(
             $this->merchantId,
             $this->terminalId,
             $this->id,
             AmountConverter::forPayment()->minorToFormatted($this->amount)
-        ));
+        );
     }
 }

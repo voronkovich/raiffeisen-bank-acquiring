@@ -6,67 +6,25 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
+use Voronkovich\RaiffeisenBankAcquiring\SecretKey;
 use Voronkovich\RaiffeisenBankAcquiring\SignatureGenerator;
 
 class SignatureGeneratorTest extends TestCase
 {
     public function testGeneratesBaseSignature()
     {
-        $secret = 'secret';
-        $merchantId = '1689996001';
-        $terminalId = '89996001';
-        $paymentId = 123;
-        $paymentAmount = '10.05';
+        // Base64 encoded 'secret' string
+        $secret = 'c2VjcmV0';
+        $merchantId = '1680024001';
+        $terminalId = '80024001';
+        $paymentId = 'test_descriptor';
+        $paymentAmount = '1.00';
 
-        $signatureGenerator = new SignatureGenerator($secret);
-        $signature = $signatureGenerator->base($merchantId, $terminalId, $paymentId, $paymentAmount);
-
-        $this->assertEquals('TcoWRL65V+gf+YVZv70DAqDcG+he2y26UjC5H3frDP0=', \base64_encode($signature));
-    }
-
-    public function testCreatesSignaturGeneratorFromBase64EncodedKey()
-    {
-        $secret = \base64_encode('secret');
-        $merchantId = '1689996001';
-        $terminalId = '89996001';
-        $paymentId = 123;
-        $paymentAmount = '10.05';
-
-        $signatureGenerator = SignatureGenerator::fromBase64($secret);
+        $key = SecretKey::fromBase64($secret);
+        $signatureGenerator = SignatureGenerator::useBase64Encoding($key);
 
         $signature = $signatureGenerator->base($merchantId, $terminalId, $paymentId, $paymentAmount);
 
-        $this->assertEquals('TcoWRL65V+gf+YVZv70DAqDcG+he2y26UjC5H3frDP0=', \base64_encode($signature));
-    }
-
-    public function testThrowsExceptionWhenKeyIsNotBase64Encoded()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Provided key is not base64-encoded.');
-
-        $signatureGenerator = SignatureGenerator::fromBase64('@@@');
-    }
-
-    public function testCreatesSignaturGeneratorFromHexEncodedKey()
-    {
-        $secret = \bin2hex('secret');
-        $merchantId = '1689996001';
-        $terminalId = '89996001';
-        $paymentId = 123;
-        $paymentAmount = '10.05';
-
-        $signatureGenerator = SignatureGenerator::fromHex($secret);
-
-        $signature = $signatureGenerator->base($merchantId, $terminalId, $paymentId, $paymentAmount);
-
-        $this->assertEquals('TcoWRL65V+gf+YVZv70DAqDcG+he2y26UjC5H3frDP0=', \base64_encode($signature));
-    }
-
-    public function testThrowsExceptionWhenKeyIsNotHexEncoded()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Provided key is not hex-encoded.');
-
-        $signatureGenerator = SignatureGenerator::fromHex('===');
+        $this->assertEquals('PydO7jX5BZVYWGa45ZRWX54gstq/pQyFfHmKuGJt53A=', $signature);
     }
 }
