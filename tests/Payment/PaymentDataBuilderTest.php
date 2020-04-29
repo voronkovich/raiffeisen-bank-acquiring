@@ -66,7 +66,9 @@ class PaymentDataBuilderTest extends TestCase
 
     public function testGeneratesSignatureIfGeneratorProvided()
     {
-        $data = (new PaymentDataBuilder())
+        $signatureGenerator = new SignatureGenerator('secret');
+
+        $data = (new PaymentDataBuilder($signatureGenerator))
             ->setId(123)
             ->setAmount(5034)
             ->setMerchantId('1689996001')
@@ -78,7 +80,6 @@ class PaymentDataBuilderTest extends TestCase
             ->setTerminalId('89996001')
             ->setSuccessUrl('https://verycoolshop.abc/success')
             ->setFailUrl('https://verycoolshop.abc/fail')
-            ->setSignatureGenerator(new SignatureGenerator('secret'))
             ->getData()
         ;
 

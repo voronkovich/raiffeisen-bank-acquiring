@@ -24,6 +24,11 @@ class PaymentDataBuilder
     private $language;
     private $signatureGenerator;
 
+    public function __construct(SignatureGenerator $signatureGenerator = null)
+    {
+        $this->signatureGenerator = $signatureGenerator;
+    }
+
     public function setId($id): self
     {
         $this->id = $id;
@@ -104,13 +109,6 @@ class PaymentDataBuilder
     public function setLanguage(string $language): self
     {
         $this->language = $language;
-
-        return $this;
-    }
-
-    public function setSignatureGenerator(SignatureGenerator $signatureGenerator): self
-    {
-        $this->signatureGenerator = $signatureGenerator;
 
         return $this;
     }
