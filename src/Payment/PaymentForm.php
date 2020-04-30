@@ -23,6 +23,13 @@ class PaymentForm
         ], $attributes);
     }
 
+    public static function test(array $data, string $label = 'Pay', array $attributes = []): self
+    {
+        return new self($data, $label, \array_replace([
+            'action' => self::TEST_URL,
+        ], $attributes));
+    }
+
     public function render(): string
     {
         return \sprintf('<form%s>%s</form>', $this->renderAttributes(), $this->renderBody());
