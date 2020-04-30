@@ -10,6 +10,8 @@ use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackPaymentData;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackReversalData;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackException;
+use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureException;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class CallbackDataFactoryTest extends TestCase
 {
@@ -67,5 +69,26 @@ class CallbackDataFactoryTest extends TestCase
         $callbackDataFactory = new CallbackDataFactory();
 
         $callbackDataFactory->fromArray([]);
+    }
+
+    public function testThrowsExceptionIfSignatureIsInvalid()
+    {
+        $signatureGenerator = SignatureGenerator::base64('xxx');
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '0',
+            'hmac' => 'invalid',
+        ];
+
+        $this->expectException(InvalidCallbackSignatureException::class);
+        $this->expectExceptionMessage('Payment with ID "12343498" has invalid signature.');
+
+        $payment = $callbackDataFactory->fromArray($data);
     }
 }
