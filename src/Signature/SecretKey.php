@@ -15,7 +15,7 @@ class SecretKey
         $this->value = $value;
     }
 
-    public static function fromBase64(string $base64EncodedValue): self
+    public static function base64(string $base64EncodedValue): self
     {
         $value = @\base64_decode($base64EncodedValue, true);
 
@@ -26,7 +26,7 @@ class SecretKey
         return new self($value);
     }
 
-    public static function fromHex(string $hexEncodedValue): self
+    public static function hex(string $hexEncodedValue): self
     {
         $value = @\hex2bin($hexEncodedValue);
 
@@ -49,6 +49,6 @@ class SecretKey
 
     public function toBase64(): string
     {
-        return \bin2hex($this->value);
+        return \base64_encode($this->value);
     }
 }

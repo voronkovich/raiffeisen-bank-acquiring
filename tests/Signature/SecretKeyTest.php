@@ -15,11 +15,9 @@ class SecretKeyTest extends TestCase
      */
     public function testCanBeInstantiatedFromBase64EncodedString()
     {
-        $secret = 'secret';
+        $key = SecretKey::base64('c2VjcmV0');
 
-        $key = SecretKey::fromBase64(\base64_encode($secret));
-
-        $this->assertSame($secret, $key->getValue());
+        $this->assertSame('secret', $key->getValue());
     }
 
     /**
@@ -30,7 +28,7 @@ class SecretKeyTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Provided key is not base64-encoded.');
 
-        $key = SecretKey::fromBase64('@@@');
+        $key = SecretKey::base64('@@@');
     }
 
     /**
@@ -38,11 +36,9 @@ class SecretKeyTest extends TestCase
      */
     public function testCanBeInstantiatedFromHexEncodedString()
     {
-        $secret = 'secret';
+        $key = SecretKey::hex('736563726574');
 
-        $key = SecretKey::fromHex(\bin2hex($secret));
-
-        $this->assertSame($secret, $key->getValue());
+        $this->assertSame('secret', $key->getValue());
     }
 
     /**
@@ -53,7 +49,7 @@ class SecretKeyTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Provided key is not hex-encoded.');
 
-        $key = SecretKey::fromHex('===');
+        $key = SecretKey::hex('===');
     }
 
     /**
@@ -61,11 +57,9 @@ class SecretKeyTest extends TestCase
      */
     public function testCanBeConvertedFromBase64ToHexFormat()
     {
-        $secret = 'secret';
+        $key = SecretKey::base64('c2VjcmV0');
 
-        $key = SecretKey::fromBase64(\base64_encode($secret));
-
-        $this->assertSame(\bin2hex($secret), $key->toHex());
+        $this->assertSame('736563726574', $key->toHex());
     }
 
     /**
@@ -73,10 +67,8 @@ class SecretKeyTest extends TestCase
      */
     public function testCanBeConvertedFromHexToBase64Format()
     {
-        $secret = 'secret';
+        $key = SecretKey::hex('736563726574');
 
-        $key = SecretKey::fromBase64(\base64_encode($secret));
-
-        $this->assertSame(\bin2hex($secret), $key->toHex());
+        $this->assertSame('c2VjcmV0', $key->toBase64());
     }
 }

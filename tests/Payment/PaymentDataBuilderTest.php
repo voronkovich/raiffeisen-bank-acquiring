@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
 use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentDataBuilder;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SecretKey;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\Signature;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class PaymentDataBuilderTest extends TestCase
@@ -68,8 +69,7 @@ class PaymentDataBuilderTest extends TestCase
     public function testGeneratesSignatureIfGeneratorProvided()
     {
         // Base64 encoded 'secret' string
-        $key = SecretKey::fromBase64('c2VjcmV0');
-        $signatureGenerator = SignatureGenerator::useBase64Encoding($key);
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
         $data = (new PaymentDataBuilder($signatureGenerator))
             ->setId(123)
@@ -92,10 +92,9 @@ class PaymentDataBuilderTest extends TestCase
     public function testSupportsHexEncodedSignature()
     {
         // Base64 encoded 'secret' string
-        $key = SecretKey::fromBase64('c2VjcmV0');
-        $signatureGenerator = SignatureGenerator::useHexEncoding($key);
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
-        $data = (new PaymentDataBuilder($signatureGenerator))
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::HEX))
             ->setId(123)
             ->setAmount(5034)
             ->setMerchantId('1689996001')

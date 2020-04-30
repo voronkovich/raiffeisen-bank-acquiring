@@ -6,6 +6,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
 use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
+use Voronkovich\RaiffeisenBankAcquiring\Signature\Signature;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class PaymentDataBuilder
@@ -23,10 +24,14 @@ class PaymentDataBuilder
     private $failUrl;
     private $language;
     private $signatureGenerator;
+    private $signatureEncoding;
 
-    public function __construct(SignatureGenerator $signatureGenerator = null)
-    {
+    public function __construct(
+        SignatureGenerator $signatureGenerator = null,
+        string $signatureEncoding = Signature::BASE64
+    ) {
         $this->signatureGenerator = $signatureGenerator;
+        $this->signatureEncoding = $signatureEncoding;
     }
 
     public function setId($id): self
@@ -134,13 +139,7 @@ class PaymentDataBuilder
             $data['Language'] = Language::fromIsoCode($this->language);
         }
 
-        if (null !== $this->signatureGenerator) {
-            $data['HMAC'] = $this->generateSignature();
-
-            if ($this->signatureGenerator->isHexEncodingUsed()) {
-                $data['Options'] = 'H'.($data['Options'] ?? '');
-            }
-        }
+        $this->addSignature($data);
 
         return $data;
     }
@@ -168,7 +167,19 @@ class PaymentDataBuilder
         }
     }
 
-    private function generateSignature(): string
+    private function addSignature(array &$data): void
+    {
+        if (null !== $this->signatureGenerator) {
+            $signature = $this->generateSignature();
+            $data['HMAC'] = $signature->getValue($this->signatureEncoding);
+
+            if (Signature::HEX === $this->signatureEncoding) {
+                $data['Options'] = 'H'.($data['Options'] ?? '');
+            }
+        }
+    }
+
+    private function generateSignature(): Signature
     {
         return $this->signatureGenerator->base(
             $this->merchantId,
