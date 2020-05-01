@@ -24,6 +24,11 @@ class PaymentDataBuilder
     private $failUrl;
     private $language;
     private $lifetime;
+    private $requireCardholderName = false;
+    private $requireCardholderEmail = false;
+    private $requireCardholderPhone = false;
+    private $requireCardholderCountry = false;
+    private $requireCardholderCity = false;
 
     private $signatureGenerator;
     private $signatureEncoding;
@@ -127,6 +132,41 @@ class PaymentDataBuilder
         return $this;
     }
 
+    public function requireCardholderName(bool $requireCardholderName = true): self
+    {
+        $this->requireCardholderName = $requireCardholderName;
+
+        return $this;
+    }
+
+    public function requireCardholderEmail(bool $requireCardholderEmail = true): self
+    {
+        $this->requireCardholderEmail = $requireCardholderEmail;
+
+        return $this;
+    }
+
+    public function requireCardholderPhone(bool $requireCardholderPhone = true): self
+    {
+        $this->requireCardholderPhone = $requireCardholderPhone;
+
+        return $this;
+    }
+
+    public function requireCardholderCountry(bool $requireCardholderCountry = true): self
+    {
+        $this->requireCardholderCountry = $requireCardholderCountry;
+
+        return $this;
+    }
+
+    public function requireCardholderCity(bool $requireCardholderCity = true): self
+    {
+        $this->requireCardholderCity = $requireCardholderCity;
+
+        return $this;
+    }
+
     public function getData(): array
     {
         $this->checkRequiredParameters();
@@ -149,6 +189,8 @@ class PaymentDataBuilder
         }
 
         $this->addLifetime($data);
+        $this->requireCardholderInfo($data);
+
         $this->addSignature($data);
 
         return $data;
@@ -183,6 +225,29 @@ class PaymentDataBuilder
             $data['Window'] = $this->lifetime;
             $data['Time'] = \time();
             $data['Options'] = 'T'.($data['Options'] ?? '');
+        }
+    }
+
+    private function requireCardholderInfo(array &$data): void
+    {
+        if ($this->requireCardholderName) {
+            $data['CardholderName'] = 'Y';
+        }
+
+        if ($this->requireCardholderEmail) {
+            $data['Email'] = 'Y';
+        }
+
+        if ($this->requireCardholderPhone) {
+            $data['Phone'] = 'Y';
+        }
+
+        if ($this->requireCardholderCountry) {
+            $data['Country'] = 'Y';
+        }
+
+        if ($this->requireCardholderCity) {
+            $data['City'] = 'Y';
         }
     }
 
