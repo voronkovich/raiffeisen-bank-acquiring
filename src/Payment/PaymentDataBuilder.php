@@ -184,12 +184,10 @@ class PaymentDataBuilder
             'FailURL' => $this->failUrl,
         ];
 
-        if (null !== $this->language) {
-            $data['Language'] = Language::fromIsoCode($this->language);
-        }
 
-        $this->addLifetime($data);
-        $this->requireCardholderInfo($data);
+        $this->addLanguageIfNeeded($data);
+        $this->addLifetimeIfNeeded($data);
+        $this->requireCardholderInfoIfNeeded($data);
 
         $this->addSignature($data);
 
@@ -219,7 +217,14 @@ class PaymentDataBuilder
         }
     }
 
-    private function addLifetime(array &$data): void
+    private function addLanguageIfNeeded(array &$data): void
+    {
+        if (null !== $this->language) {
+            $data['Language'] = Language::fromIsoCode($this->language);
+        }
+    }
+
+    private function addLifetimeIfNeeded(array &$data): void
     {
         if (null !== $this->lifetime) {
             $data['Window'] = $this->lifetime;
@@ -228,7 +233,7 @@ class PaymentDataBuilder
         }
     }
 
-    private function requireCardholderInfo(array &$data): void
+    private function requireCardholderInfoIfNeeded(array &$data): void
     {
         if ($this->requireCardholderName) {
             $data['CardholderName'] = 'Y';
