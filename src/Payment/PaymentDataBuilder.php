@@ -23,6 +23,8 @@ class PaymentDataBuilder
     private $successUrl;
     private $failUrl;
     private $language;
+    private $lifetime;
+
     private $signatureGenerator;
     private $signatureEncoding;
 
@@ -118,6 +120,13 @@ class PaymentDataBuilder
         return $this;
     }
 
+    public function setLifetime(int $lifetimeInSeconds): self
+    {
+        $this->lifetime = $lifetimeInSeconds;
+
+        return $this;
+    }
+
     public function getData(): array
     {
         $this->checkRequiredParameters();
@@ -139,6 +148,7 @@ class PaymentDataBuilder
             $data['Language'] = Language::fromIsoCode($this->language);
         }
 
+        $this->addLifetime($data);
         $this->addSignature($data);
 
         return $data;
@@ -167,10 +177,19 @@ class PaymentDataBuilder
         }
     }
 
+    private function addLifetime(array &$data): void
+    {
+        if (null !== $this->lifetime) {
+            $data['Window'] = $this->lifetime;
+            $data['Time'] = \time();
+            $data['Options'] = 'T'.($data['Options'] ?? '');
+        }
+    }
+
     private function addSignature(array &$data): void
     {
         if (null !== $this->signatureGenerator) {
-            $signature = $this->generateSignature();
+            $signature = $this->generateSignature($data);
             $data['HMAC'] = $signature->getValue($this->signatureEncoding);
 
             if (Signature::HEX === $this->signatureEncoding) {
@@ -179,13 +198,20 @@ class PaymentDataBuilder
         }
     }
 
-    private function generateSignature(): Signature
+    private function generateSignature(array $data): Signature
     {
-        return $this->signatureGenerator->base(
+        $chunks = [
             $this->merchantId,
             $this->terminalId,
-            $this->id,
-            AmountConverter::forPayment()->minorToFormatted($this->amount)
-        );
+            $data['PurchaseDesc'],
+            $data['PurchaseAmt'],
+        ];
+
+        if (isset($data['Time']) && isset($data['Window'])) {
+            $chunks[] = $data['Time'];
+            $chunks[] = $data['Window'];
+        }
+
+        return $this->signatureGenerator->generate($chunks);
     }
 }

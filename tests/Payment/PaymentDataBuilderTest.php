@@ -133,4 +133,32 @@ class PaymentDataBuilderTest extends TestCase
 
         $this->assertEquals('02', $data['Language']);
     }
+
+    public function testSetsPaymentLifetime()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $time = \time();
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setLifetime(3600)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('80024001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
+
+        $this->assertEquals('3600', $data['Window']);
+        $this->assertGreaterThanOrEqual($time, $data['Time']);
+        $this->assertStringContainsString('T', $data['Options']);
+    }
 }
