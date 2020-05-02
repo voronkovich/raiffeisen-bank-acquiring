@@ -161,11 +161,9 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertStringContainsString('T', $data['Options']);
     }
 
-    public function testRequiresCaldholderInformation()
+    public function testAllowsToRequireCaldholderInformation()
     {
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
-
-        $time = \time();
 
         $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
             ->setId(123)
@@ -185,6 +183,7 @@ class PaymentDataBuilderTest extends TestCase
             ->requireCardholderPhone()
             ->requireCardholderCountry()
             ->requireCardholderCity()
+            ->requireCardholderAddress()
             ->getData()
         ;
 
@@ -193,5 +192,6 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertEquals('Y', $data['Phone']);
         $this->assertEquals('Y', $data['Country']);
         $this->assertEquals('Y', $data['City']);
+        $this->assertEquals('Y', $data['Address']);
     }
 }

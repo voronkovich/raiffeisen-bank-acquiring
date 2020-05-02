@@ -29,6 +29,7 @@ class PaymentDataBuilder
     private $requireCardholderPhone = false;
     private $requireCardholderCountry = false;
     private $requireCardholderCity = false;
+    private $requireCardholderAddress = false;
 
     private $signatureGenerator;
     private $signatureEncoding;
@@ -167,6 +168,13 @@ class PaymentDataBuilder
         return $this;
     }
 
+    public function requireCardholderAddress(bool $requireCardholderAddress = true): self
+    {
+        $this->requireCardholderAddress = $requireCardholderAddress;
+
+        return $this;
+    }
+
     public function getData(): array
     {
         $this->checkRequiredParameters();
@@ -253,6 +261,10 @@ class PaymentDataBuilder
 
         if ($this->requireCardholderCity) {
             $data['City'] = 'Y';
+        }
+
+        if ($this->requireCardholderAddress) {
+            $data['Address'] = 'Y';
         }
     }
 
