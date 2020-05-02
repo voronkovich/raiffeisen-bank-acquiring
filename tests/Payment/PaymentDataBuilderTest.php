@@ -194,4 +194,30 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertEquals('Y', $data['City']);
         $this->assertEquals('Y', $data['Address']);
     }
+
+    public function testAllowsToPassExternalData()
+    {
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setLifetime(3600)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('80024001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->setExt1('ext1')
+            ->setExt2('ext2')
+            ->getData()
+        ;
+
+        $this->assertEquals('ext1', $data['Ext1']);
+        $this->assertEquals('ext2', $data['Ext2']);
+    }
 }

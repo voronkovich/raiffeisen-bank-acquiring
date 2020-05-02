@@ -30,6 +30,8 @@ class PaymentDataBuilder
     private $requireCardholderCountry = false;
     private $requireCardholderCity = false;
     private $requireCardholderAddress = false;
+    private $ext1;
+    private $ext2;
 
     private $signatureGenerator;
     private $signatureEncoding;
@@ -175,6 +177,20 @@ class PaymentDataBuilder
         return $this;
     }
 
+    public function setExt1(string $ext1): self
+    {
+        $this->ext1 = $ext1;
+
+        return $this;
+    }
+
+    public function setExt2(string $ext2): self
+    {
+        $this->ext2 = $ext2;
+
+        return $this;
+    }
+
     public function getData(): array
     {
         $this->checkRequiredParameters();
@@ -195,6 +211,7 @@ class PaymentDataBuilder
 
         $this->addLanguageIfNeeded($data);
         $this->addLifetimeIfNeeded($data);
+        $this->addExternalFielsIfNeeded($data);
         $this->requireCardholderInfoIfNeeded($data);
 
         $this->addSignature($data);
@@ -238,6 +255,17 @@ class PaymentDataBuilder
             $data['Window'] = $this->lifetime;
             $data['Time'] = \time();
             $data['Options'] = 'T'.($data['Options'] ?? '');
+        }
+    }
+
+    private function addExternalFielsIfNeeded(array &$data): void
+    {
+        if (null !== $this->ext1) {
+            $data['Ext1'] = $this->ext1;
+        }
+
+        if (null !== $this->ext2) {
+            $data['Ext2'] = $this->ext2;
         }
     }
 
