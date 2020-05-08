@@ -13,6 +13,7 @@ use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 class PaymentDataBuilderTest extends TestCase
 {
     private const RUB = 643;
+    private const USD = 840;
 
     public function testCreatesDataForSimplePayment()
     {
@@ -185,6 +186,33 @@ class PaymentDataBuilderTest extends TestCase
         ;
 
         $this->assertGreaterThanOrEqual($time, $data['Time']);
+    }
+
+    public function testAllowsToSetPaymentCurrency()
+    {
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setCurrency(self::USD)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('80024001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
+
+        $this->assertStringContainsString('C', $data['Options']);
+        $this->assertEquals(0, $data['PurchaseAmt']);
+        $this->assertEquals(840, $data['PCurrencyCode']);
+        $this->assertEquals('50.34', $data['PPurchaseAmt']);
+        $this->assertEquals('/pFFECgAiNcqs3ZbtrfBhfD8AUy6kDtm2/W5w5DXgzI=', $data['HMAC']);
     }
 
     public function testAllowsToRequireCaldholderInformation()

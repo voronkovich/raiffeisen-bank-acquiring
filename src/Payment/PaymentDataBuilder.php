@@ -13,6 +13,7 @@ class PaymentDataBuilder
 {
     private $id;
     private $amount;
+    private $currency;
     private $merchantId;
     private $merchantName;
     private $merchantCountry;
@@ -55,6 +56,13 @@ class PaymentDataBuilder
     public function setAmount(int $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function setCurrency(int $currency): self
+    {
+        $this->currency = $currency;
 
         return $this;
     }
@@ -219,6 +227,7 @@ class PaymentDataBuilder
 
         $this->addLanguageIfNeeded($data);
         $this->addTimeLimitIfNeeded($data);
+        $this->addCurrencyIfNeeded($data);
         $this->addExternalFielsIfNeeded($data);
         $this->requireCardholderInfoIfNeeded($data);
 
@@ -266,6 +275,20 @@ class PaymentDataBuilder
             $data['Time'] = $creationDate->getTimestamp();
             $data['Options'] = 'T'.($data['Options'] ?? '');
         }
+    }
+
+    private function addCurrencyIfNeeded(array &$data): void
+    {
+        $currency = $this->currency ?? $this->merchantCurrency;
+
+        if ($this->merchantCurrency === $currency) {
+            return;
+        }
+
+        $data['Options'] = 'C'.($data['Options'] ?? '');
+        $data['PPurchaseAmt'] = $data['PurchaseAmt'];
+        $data['PCurrencyCode'] = $currency;
+        $data['PurchaseAmt'] = 0;
     }
 
     private function addExternalFielsIfNeeded(array &$data): void
@@ -324,8 +347,13 @@ class PaymentDataBuilder
             $this->merchantId,
             $this->terminalId,
             $data['PurchaseDesc'],
-            $data['PurchaseAmt'],
         ];
+
+        if (isset($data['PCurrencyCode'])) {
+            $chunks[] = $data['PCurrencyCode'];
+        }
+
+        $chunks[] = $data['PPurchaseAmt'] ?? $data['PurchaseAmt'];
 
         if (isset($data['Time']) && isset($data['Window'])) {
             $chunks[] = $data['Time'];
