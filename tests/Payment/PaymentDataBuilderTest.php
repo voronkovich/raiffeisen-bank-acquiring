@@ -194,7 +194,6 @@ class PaymentDataBuilderTest extends TestCase
         $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
             ->setId(123)
             ->setAmount(5034)
-            ->setLifetime(3600)
             ->setMerchantId('1680024001')
             ->setMerchantName('Very Cool Shop')
             ->setMerchantCountry(self::RUB)
