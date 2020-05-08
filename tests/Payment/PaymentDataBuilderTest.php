@@ -133,7 +133,35 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertEquals('02', $data['Language']);
     }
 
-    public function testSetsPaymentLifetime()
+    public function testAllowsToSetPaymentTimeLimit()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setCreationDate(new \DateTimeImmutable('2020-05-09'))
+            ->setLifetime(3600)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('Very Cool Shop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('80024001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
+
+        $this->assertEquals('3600', $data['Window']);
+        $this->assertEquals('1588971600', $data['Time']);
+        $this->assertStringContainsString('T', $data['Options']);
+        $this->assertEquals('LIN9LrWv4hMcy7qqqNF20ZyFs9yHdVnDM5T++phHaTM=', $data['HMAC']);
+    }
+
+    public function testUsesCurrentDateIfPaymentCreationDateNotSet()
     {
         // Base64 encoded 'secret' string
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
@@ -156,9 +184,7 @@ class PaymentDataBuilderTest extends TestCase
             ->getData()
         ;
 
-        $this->assertEquals('3600', $data['Window']);
         $this->assertGreaterThanOrEqual($time, $data['Time']);
-        $this->assertStringContainsString('T', $data['Options']);
     }
 
     public function testAllowsToRequireCaldholderInformation()

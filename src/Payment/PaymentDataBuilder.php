@@ -23,6 +23,7 @@ class PaymentDataBuilder
     private $successUrl;
     private $failUrl;
     private $language;
+    private $creationDate;
     private $lifetime;
     private $requireCardholderName = false;
     private $requireCardholderEmail = false;
@@ -128,6 +129,13 @@ class PaymentDataBuilder
         return $this;
     }
 
+    public function setCreationDate(\DateTimeInterface $creationDate): self
+    {
+        $this->creationDate = $creationDate;
+
+        return $this;
+    }
+
     public function setLifetime(int $lifetimeInSeconds): self
     {
         $this->lifetime = $lifetimeInSeconds;
@@ -210,7 +218,7 @@ class PaymentDataBuilder
 
 
         $this->addLanguageIfNeeded($data);
-        $this->addLifetimeIfNeeded($data);
+        $this->addTimeLimitIfNeeded($data);
         $this->addExternalFielsIfNeeded($data);
         $this->requireCardholderInfoIfNeeded($data);
 
@@ -249,11 +257,13 @@ class PaymentDataBuilder
         }
     }
 
-    private function addLifetimeIfNeeded(array &$data): void
+    private function addTimeLimitIfNeeded(array &$data): void
     {
         if (null !== $this->lifetime) {
+            $creationDate = $this->creationDate ?? new \DateTimeImmutable();
+
             $data['Window'] = $this->lifetime;
-            $data['Time'] = \time();
+            $data['Time'] = $creationDate->getTimestamp();
             $data['Options'] = 'T'.($data['Options'] ?? '');
         }
     }
