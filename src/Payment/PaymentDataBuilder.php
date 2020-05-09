@@ -267,13 +267,15 @@ class PaymentDataBuilder
 
     private function addTimeLimitIfNeeded(array &$data): void
     {
-        if (null !== $this->lifetime) {
-            $creationDate = $this->creationDate ?? new \DateTimeImmutable();
-
-            $data['Window'] = $this->lifetime;
-            $data['Time'] = $creationDate->getTimestamp();
-            $data['Options'] = 'T'.($data['Options'] ?? '');
+        if (null === $this->lifetime) {
+            return;
         }
+
+        $creationDate = $this->creationDate ?? new \DateTimeImmutable();
+
+        $data['Window'] = $this->lifetime;
+        $data['Time'] = $creationDate->getTimestamp();
+        $data['Options'] = 'T'.($data['Options'] ?? '');
     }
 
     private function addCurrencyIfNeeded(array &$data): void
