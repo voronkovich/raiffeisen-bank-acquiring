@@ -145,7 +145,7 @@ class PaymentDataBuilderTest extends TestCase
             ->setCreationDate(new \DateTimeImmutable('2020-05-09'))
             ->setLifetime(3600)
             ->setMerchantId('1680024001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
@@ -156,10 +156,24 @@ class PaymentDataBuilderTest extends TestCase
             ->getData()
         ;
 
-        $this->assertEquals('3600', $data['Window']);
-        $this->assertEquals('1588971600', $data['Time']);
-        $this->assertStringContainsString('T', $data['Options']);
-        $this->assertEquals('LIN9LrWv4hMcy7qqqNF20ZyFs9yHdVnDM5T++phHaTM=', $data['HMAC']);
+        $expected = [
+            'PurchaseDesc' => 123,
+            'PurchaseAmt' => '50.34',
+            'Time' => 1588971600,
+            'Window' => 3600,
+            'MerchantID' => '000001680024001-80024001',
+            'MerchantName' => 'VeryCoolShop',
+            'CountryCode' => 643,
+            'CurrencyCode' => 643,
+            'MerchantCity' => 'MOSCOW',
+            'MerchantURL' => 'https://verycoolshop.abc',
+            'SuccessURL' => 'https://verycoolshop.abc/success',
+            'FailURL' => 'https://verycoolshop.abc/fail',
+            'Options' => 'T',
+            'HMAC' => 'LIN9LrWv4hMcy7qqqNF20ZyFs9yHdVnDM5T++phHaTM=',
+        ];
+
+        $this->assertEquals($expected, $data);
     }
 
     public function testUsesCurrentDateIfPaymentCreationDateNotSet()
@@ -190,6 +204,7 @@ class PaymentDataBuilderTest extends TestCase
 
     public function testAllowsToSetPaymentCurrency()
     {
+        // Base64 encoded 'secret' string
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
         $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
@@ -197,7 +212,7 @@ class PaymentDataBuilderTest extends TestCase
             ->setAmount(5034)
             ->setCurrency(self::USD)
             ->setMerchantId('1680024001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
@@ -208,11 +223,24 @@ class PaymentDataBuilderTest extends TestCase
             ->getData()
         ;
 
-        $this->assertStringContainsString('C', $data['Options']);
-        $this->assertEquals(0, $data['PurchaseAmt']);
-        $this->assertEquals(840, $data['PCurrencyCode']);
-        $this->assertEquals('50.34', $data['PPurchaseAmt']);
-        $this->assertEquals('/pFFECgAiNcqs3ZbtrfBhfD8AUy6kDtm2/W5w5DXgzI=', $data['HMAC']);
+        $expected = [
+            'PurchaseDesc' => 123,
+            'PPurchaseAmt' => '50.34',
+            'PurchaseAmt' => 0,
+            'PCurrencyCode' => 840,
+            'MerchantID' => '000001680024001-80024001',
+            'MerchantName' => 'VeryCoolShop',
+            'CountryCode' => 643,
+            'CurrencyCode' => 643,
+            'MerchantCity' => 'MOSCOW',
+            'MerchantURL' => 'https://verycoolshop.abc',
+            'SuccessURL' => 'https://verycoolshop.abc/success',
+            'FailURL' => 'https://verycoolshop.abc/fail',
+            'Options' => 'C',
+            'HMAC' => '/pFFECgAiNcqs3ZbtrfBhfD8AUy6kDtm2/W5w5DXgzI=',
+        ];
+
+        $this->assertEquals($expected, $data);
     }
 
     public function testAllowsToSetPaymentCurrencyAndTimeLimitAtTheSameTime()
