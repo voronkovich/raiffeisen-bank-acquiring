@@ -215,6 +215,51 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertEquals('/pFFECgAiNcqs3ZbtrfBhfD8AUy6kDtm2/W5w5DXgzI=', $data['HMAC']);
     }
 
+    public function testAllowsToSetPaymentCurrencyAndTimeLimitAtTheSameTime()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::HEX))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setCurrency(self::USD)
+            ->setCreationDate(new \DateTimeImmutable('2020-05-09'))
+            ->setLifetime(3600)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('VeryCoolShop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('80024001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
+
+        $expected = [
+            'PurchaseDesc' => 123,
+            'PPurchaseAmt' => '50.34',
+            'PurchaseAmt' => 0,
+            'PCurrencyCode' => 840,
+            'Time' => 1588971600,
+            'Window' => 3600,
+            'MerchantID' => '000001680024001-80024001',
+            'MerchantName' => 'VeryCoolShop',
+            'CountryCode' => 643,
+            'CurrencyCode' => 643,
+            'MerchantCity' => 'MOSCOW',
+            'MerchantURL' => 'https://verycoolshop.abc',
+            'SuccessURL' => 'https://verycoolshop.abc/success',
+            'FailURL' => 'https://verycoolshop.abc/fail',
+            'Options' => 'CHT',
+            'HMAC' => '3dcff0a49152c4d57fd0c2e1cd33a20526d38ef364d65f1bf9ba43197907b7d4',
+        ];
+
+        $this->assertEquals($expected, $data);
+    }
+
     public function testAllowsToRequireCaldholderInformation()
     {
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');

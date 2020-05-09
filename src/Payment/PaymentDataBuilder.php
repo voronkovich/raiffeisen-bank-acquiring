@@ -224,14 +224,13 @@ class PaymentDataBuilder
             'FailURL' => $this->failUrl,
         ];
 
-
         $this->addLanguageIfNeeded($data);
         $this->addTimeLimitIfNeeded($data);
         $this->addCurrencyIfNeeded($data);
         $this->addExternalFielsIfNeeded($data);
         $this->requireCardholderInfoIfNeeded($data);
-
         $this->addSignature($data);
+        $this->sortOptions($data);
 
         return $data;
     }
@@ -361,5 +360,16 @@ class PaymentDataBuilder
         }
 
         return $this->signatureGenerator->generate($chunks);
+    }
+
+    private function sortOptions(array &$data): void
+    {
+        if (!isset($data['Options'])) {
+            return;
+        }
+
+        $options = \array_unique(\str_split($data['Options']));
+        \sort($options);
+        $data['Options'] = \implode('', $options);
     }
 }
