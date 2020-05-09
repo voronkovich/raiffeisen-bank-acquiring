@@ -32,6 +32,7 @@ class PaymentDataBuilder
     private $requireCardholderCountry = false;
     private $requireCardholderCity = false;
     private $requireCardholderAddress = false;
+    private $useMobileDesign = false;
     private $ext1;
     private $ext2;
 
@@ -193,6 +194,13 @@ class PaymentDataBuilder
         return $this;
     }
 
+    public function useMobileDesign(bool $useMobileDesign = true): self
+    {
+        $this->useMobileDesign = $useMobileDesign;
+
+        return $this;
+    }
+
     public function setExt1(string $ext1): self
     {
         $this->ext1 = $ext1;
@@ -229,6 +237,7 @@ class PaymentDataBuilder
         $this->addCurrencyIfNeeded($data);
         $this->addExternalFielsIfNeeded($data);
         $this->requireCardholderInfoIfNeeded($data);
+        $this->useMobileDesignIfNeeded($data);
         $this->addSignature($data);
         $this->sortOptions($data);
 
@@ -327,6 +336,13 @@ class PaymentDataBuilder
 
         if ($this->requireCardholderAddress) {
             $data['Address'] = 'Y';
+        }
+    }
+
+    private function useMobileDesignIfNeeded(array &$data): void
+    {
+        if ($this->useMobileDesign) {
+            $data['Mobile'] = 'Y';
         }
     }
 
