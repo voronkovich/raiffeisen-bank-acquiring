@@ -15,123 +15,82 @@ class PaymentDataBuilderTest extends TestCase
     private const RUB = 643;
     private const USD = 840;
 
-    public function testCreatesDataForSimplePayment()
+    public function testAllowsToCreateSimplePaymentWithDefaultCurrency()
     {
-        $data = (new PaymentDataBuilder())
-            ->setId(100)
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(123)
             ->setAmount(5034)
-            ->setMerchantId('1689996001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantId('1680024001')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
             ->setMerchantUrl('https://verycoolshop.abc')
-            ->setTerminalId('89996001')
+            ->setTerminalId('80024001')
             ->setSuccessUrl('https://verycoolshop.abc/success')
             ->setFailUrl('https://verycoolshop.abc/fail')
             ->getData()
         ;
 
-        $this->assertEquals($data, [
-            'PurchaseDesc' => 100,
+        $expected = [
+            'PurchaseDesc' => 123,
             'PurchaseAmt' => '50.34',
-            'MerchantID' => '000001689996001-89996001',
-            'MerchantName' => 'Very Cool Shop',
-            'CountryCode' => self::RUB,
-            'CurrencyCode' => self::RUB,
+            'MerchantID' => '000001680024001-80024001',
+            'MerchantName' => 'VeryCoolShop',
+            'CountryCode' => 643,
+            'CurrencyCode' => 643,
             'MerchantCity' => 'MOSCOW',
             'MerchantURL' => 'https://verycoolshop.abc',
             'SuccessURL' => 'https://verycoolshop.abc/success',
             'FailURL' => 'https://verycoolshop.abc/fail',
-        ]);
+            'HMAC' => 'H8uGBid+sbxCSkPs/LgaEyLoVuZRxBpIvbiNoiC3sZk=',
+        ];
+
+        $this->assertEquals($expected, $data);
     }
 
-    public function testThrowsAnExceptionIfRequiredParameterIsMissing()
-    {
-        $this->expectException(RequiredParameterMissingException::class);
-        $this->expectExceptionMessage('Required parameter "amount" is missing.');
-
-        $data = (new PaymentDataBuilder())
-            ->setId(100)
-            ->setMerchantId('1689996001')
-            ->setMerchantName('Very Cool Shop')
-            ->setMerchantCountry(self::RUB)
-            ->setMerchantCurrency(self::RUB)
-            ->setMerchantCity('MOSCOW')
-            ->setMerchantUrl('https://verycoolshop.abc')
-            ->setTerminalId('89996001')
-            ->setSuccessUrl('https://verycoolshop.abc/success')
-            ->setFailUrl('https://verycoolshop.abc/fail')
-            ->getData()
-        ;
-    }
-
-    public function testGeneratesSignatureIfGeneratorProvided()
+    public function testAllowsToSetPaymentCurrency()
     {
         // Base64 encoded 'secret' string
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
-        $data = (new PaymentDataBuilder($signatureGenerator))
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
             ->setId(123)
             ->setAmount(5034)
-            ->setMerchantId('1689996001')
-            ->setMerchantName('Very Cool Shop')
+            ->setCurrency(self::USD)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
             ->setMerchantUrl('https://verycoolshop.abc')
-            ->setTerminalId('89996001')
+            ->setTerminalId('80024001')
             ->setSuccessUrl('https://verycoolshop.abc/success')
             ->setFailUrl('https://verycoolshop.abc/fail')
             ->getData()
         ;
 
-        $this->assertSame('2eA1i9nuRCnn09VI4WRPFFtWs9kH2RHI8WZZOgnkYxg=', $data['HMAC']);
-    }
+        $expected = [
+            'PurchaseDesc' => 123,
+            'PPurchaseAmt' => '50.34',
+            'PurchaseAmt' => 0,
+            'PCurrencyCode' => 840,
+            'MerchantID' => '000001680024001-80024001',
+            'MerchantName' => 'VeryCoolShop',
+            'CountryCode' => 643,
+            'CurrencyCode' => 643,
+            'MerchantCity' => 'MOSCOW',
+            'MerchantURL' => 'https://verycoolshop.abc',
+            'SuccessURL' => 'https://verycoolshop.abc/success',
+            'FailURL' => 'https://verycoolshop.abc/fail',
+            'Options' => 'C',
+            'HMAC' => '/pFFECgAiNcqs3ZbtrfBhfD8AUy6kDtm2/W5w5DXgzI=',
+        ];
 
-    public function testSupportsHexEncodedSignature()
-    {
-        // Base64 encoded 'secret' string
-        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
-
-        $data = (new PaymentDataBuilder($signatureGenerator, Signature::HEX))
-            ->setId(123)
-            ->setAmount(5034)
-            ->setMerchantId('1689996001')
-            ->setMerchantName('Very Cool Shop')
-            ->setMerchantCountry(self::RUB)
-            ->setMerchantCurrency(self::RUB)
-            ->setMerchantCity('MOSCOW')
-            ->setMerchantUrl('https://verycoolshop.abc')
-            ->setTerminalId('89996001')
-            ->setSuccessUrl('https://verycoolshop.abc/success')
-            ->setFailUrl('https://verycoolshop.abc/fail')
-            ->getData()
-        ;
-
-        $this->assertStringContainsString('H', $data['Options']);
-        $this->assertSame('d9e0358bd9ee4429e7d3d548e1644f145b56b3d907d911c8f166593a09e46318', $data['HMAC']);
-    }
-
-    public function testSetsInterfaceLanguage()
-    {
-        $data = (new PaymentDataBuilder())
-            ->setId(123)
-            ->setAmount(5034)
-            ->setMerchantId('1689996001')
-            ->setMerchantName('Very Cool Shop')
-            ->setMerchantCountry(self::RUB)
-            ->setMerchantCurrency(self::RUB)
-            ->setMerchantCity('MOSCOW')
-            ->setMerchantUrl('https://verycoolshop.abc')
-            ->setTerminalId('89996001')
-            ->setSuccessUrl('https://verycoolshop.abc/success')
-            ->setFailUrl('https://verycoolshop.abc/fail')
-            ->setLanguage('en')
-            ->getData()
-        ;
-
-        $this->assertEquals('02', $data['Language']);
+        $this->assertEquals($expected, $data);
     }
 
     public function testAllowsToSetPaymentTimeLimit()
@@ -188,7 +147,7 @@ class PaymentDataBuilderTest extends TestCase
             ->setAmount(5034)
             ->setLifetime(3600)
             ->setMerchantId('1680024001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
@@ -202,53 +161,12 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertGreaterThanOrEqual($time, $data['Time']);
     }
 
-    public function testAllowsToSetPaymentCurrency()
-    {
-        // Base64 encoded 'secret' string
-        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
-
-        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
-            ->setId(123)
-            ->setAmount(5034)
-            ->setCurrency(self::USD)
-            ->setMerchantId('1680024001')
-            ->setMerchantName('VeryCoolShop')
-            ->setMerchantCountry(self::RUB)
-            ->setMerchantCurrency(self::RUB)
-            ->setMerchantCity('MOSCOW')
-            ->setMerchantUrl('https://verycoolshop.abc')
-            ->setTerminalId('80024001')
-            ->setSuccessUrl('https://verycoolshop.abc/success')
-            ->setFailUrl('https://verycoolshop.abc/fail')
-            ->getData()
-        ;
-
-        $expected = [
-            'PurchaseDesc' => 123,
-            'PPurchaseAmt' => '50.34',
-            'PurchaseAmt' => 0,
-            'PCurrencyCode' => 840,
-            'MerchantID' => '000001680024001-80024001',
-            'MerchantName' => 'VeryCoolShop',
-            'CountryCode' => 643,
-            'CurrencyCode' => 643,
-            'MerchantCity' => 'MOSCOW',
-            'MerchantURL' => 'https://verycoolshop.abc',
-            'SuccessURL' => 'https://verycoolshop.abc/success',
-            'FailURL' => 'https://verycoolshop.abc/fail',
-            'Options' => 'C',
-            'HMAC' => '/pFFECgAiNcqs3ZbtrfBhfD8AUy6kDtm2/W5w5DXgzI=',
-        ];
-
-        $this->assertEquals($expected, $data);
-    }
-
     public function testAllowsToSetPaymentCurrencyAndTimeLimitAtTheSameTime()
     {
         // Base64 encoded 'secret' string
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
-        $data = (new PaymentDataBuilder($signatureGenerator, Signature::HEX))
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
             ->setId(123)
             ->setAmount(5034)
             ->setCurrency(self::USD)
@@ -281,8 +199,8 @@ class PaymentDataBuilderTest extends TestCase
             'MerchantURL' => 'https://verycoolshop.abc',
             'SuccessURL' => 'https://verycoolshop.abc/success',
             'FailURL' => 'https://verycoolshop.abc/fail',
-            'Options' => 'CHT',
-            'HMAC' => '3dcff0a49152c4d57fd0c2e1cd33a20526d38ef364d65f1bf9ba43197907b7d4',
+            'Options' => 'CT',
+            'HMAC' => 'Pc/wpJFSxNV/0MLhzTOiBSbTjvNk1l8b+bpDGXkHt9Q=',
         ];
 
         $this->assertEquals($expected, $data);
@@ -290,13 +208,14 @@ class PaymentDataBuilderTest extends TestCase
 
     public function testAllowsToRequireCaldholderInformation()
     {
+        // Base64 encoded 'secret' string
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
         $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
             ->setId(123)
             ->setAmount(5034)
             ->setMerchantId('1680024001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
@@ -323,6 +242,7 @@ class PaymentDataBuilderTest extends TestCase
 
     public function testAllowsToPassExternalData()
     {
+        // Base64 encoded 'secret' string
         $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
 
         $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
@@ -330,7 +250,7 @@ class PaymentDataBuilderTest extends TestCase
             ->setAmount(5034)
             ->setLifetime(3600)
             ->setMerchantId('1680024001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
@@ -347,6 +267,30 @@ class PaymentDataBuilderTest extends TestCase
         $this->assertEquals('ext2', $data['Ext2']);
     }
 
+    public function testAllowsToSetInterfaceLanguage()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setMerchantId('1689996001')
+            ->setMerchantName('VeryCoolShop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->setLanguage('en')
+            ->getData()
+        ;
+
+        $this->assertEquals('02', $data['Language']);
+    }
+
     public function testAllowsToUseMobileDesign()
     {
         // Base64 encoded 'secret' string
@@ -356,7 +300,7 @@ class PaymentDataBuilderTest extends TestCase
             ->setId(123)
             ->setAmount(5034)
             ->setMerchantId('1680024001')
-            ->setMerchantName('Very Cool Shop')
+            ->setMerchantName('VeryCoolShop')
             ->setMerchantCountry(self::RUB)
             ->setMerchantCurrency(self::RUB)
             ->setMerchantCity('MOSCOW')
@@ -369,5 +313,66 @@ class PaymentDataBuilderTest extends TestCase
         ;
 
         $this->assertEquals('Y', $data['Mobile']);
+    }
+
+    public function testSupportsHexEncodedSignature()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::HEX))
+            ->setId(123)
+            ->setAmount(5034)
+            ->setMerchantId('1680024001')
+            ->setMerchantName('VeryCoolShop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('80024001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
+
+        $expected = [
+            'PurchaseDesc' => 123,
+            'PurchaseAmt' => '50.34',
+            'MerchantID' => '000001680024001-80024001',
+            'MerchantName' => 'VeryCoolShop',
+            'CountryCode' => 643,
+            'CurrencyCode' => 643,
+            'MerchantCity' => 'MOSCOW',
+            'MerchantURL' => 'https://verycoolshop.abc',
+            'SuccessURL' => 'https://verycoolshop.abc/success',
+            'FailURL' => 'https://verycoolshop.abc/fail',
+            'Options' => 'H',
+            'HMAC' => '1fcb8606277eb1bc424a43ecfcb81a1322e856e651c41a48bdb88da220b7b199',
+        ];
+
+        $this->assertEquals($expected, $data);
+    }
+
+    public function testThrowsAnExceptionIfRequiredParameterIsMissing()
+    {
+        $this->expectException(RequiredParameterMissingException::class);
+        $this->expectExceptionMessage('Required parameter "amount" is missing.');
+
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $data = (new PaymentDataBuilder($signatureGenerator, Signature::BASE64))
+            ->setId(100)
+            ->setMerchantId('1689996001')
+            ->setMerchantName('VeryCoolShop')
+            ->setMerchantCountry(self::RUB)
+            ->setMerchantCurrency(self::RUB)
+            ->setMerchantCity('MOSCOW')
+            ->setMerchantUrl('https://verycoolshop.abc')
+            ->setTerminalId('89996001')
+            ->setSuccessUrl('https://verycoolshop.abc/success')
+            ->setFailUrl('https://verycoolshop.abc/fail')
+            ->getData()
+        ;
     }
 }
