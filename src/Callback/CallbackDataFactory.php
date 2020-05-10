@@ -16,7 +16,7 @@ class CallbackDataFactory
 
     private $signatureGenerator;
 
-    public function __construct(SignatureGenerator $signatureGenerator = null)
+    public function __construct(SignatureGenerator $signatureGenerator)
     {
         $this->signatureGenerator = $signatureGenerator;
     }
@@ -57,15 +57,13 @@ class CallbackDataFactory
 
     private function checkSignature(array $data): void
     {
-        if (isset($data['hmac']) && null !== $this->signatureGenerator) {
-            $signature = $this->signatureGenerator->callback($data['descr'], $data['amt'], $data['result']);
+        $signature = $this->signatureGenerator->callback($data['descr'], $data['amt'], $data['result']);
 
-            if ($signature->getValue() !== $data['hmac']) {
-                throw new InvalidCallbackSignatureException(\sprintf(
-                    'Payment with ID "%s" has invalid signature.',
-                    $data['descr']
-                ));
-            }
+        if ($signature->base64() !== $data['hmac']) {
+            throw new InvalidCallbackSignatureException(\sprintf(
+                'Payment with ID "%s" has invalid signature.',
+                $data['descr']
+            ));
         }
     }
 }

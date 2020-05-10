@@ -17,7 +17,10 @@ class CallbackDataFactoryTest extends TestCase
 {
     public function testCreatesPaymentCallbackDataFromArray()
     {
-        $callbackDataFactory = new CallbackDataFactory();
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
 
         $data = [
             'type' => 'conf_pay',
@@ -26,6 +29,7 @@ class CallbackDataFactoryTest extends TestCase
             'amt' => '234,33',
             'date' => '2011-12-25 16:05:24',
             'result' => '0',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
         ];
 
         $payment = $callbackDataFactory->fromArray($data);
@@ -40,7 +44,10 @@ class CallbackDataFactoryTest extends TestCase
 
     public function testCreatesReversalCallbackDataFromArray()
     {
-        $callbackDataFactory = new CallbackDataFactory();
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
 
         $data = [
             'type' => 'conf_reversal',
@@ -49,6 +56,7 @@ class CallbackDataFactoryTest extends TestCase
             'amt' => '100,10',
             'date' => '2011-12-25 16:05:24',
             'result' => '0',
+            'hmac' => 'yRaZgBLGCuba/xHM8rt+NhsyEOilP9bvBeULKOZIf0I=',
         ];
 
         $reversal = $callbackDataFactory->fromArray($data);
@@ -63,10 +71,13 @@ class CallbackDataFactoryTest extends TestCase
 
     public function testThrowsExceptionIfCallbackTypeIsNotDefined()
     {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
         $this->expectException(InvalidCallbackDataException::class);
         $this->expectExceptionMessage('Callback parameter "type" is not defined.');
-
-        $callbackDataFactory = new CallbackDataFactory();
 
         $callbackDataFactory->fromArray([]);
     }

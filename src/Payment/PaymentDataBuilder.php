@@ -40,7 +40,7 @@ class PaymentDataBuilder
     private $signatureEncoding;
 
     public function __construct(
-        SignatureGenerator $signatureGenerator = null,
+        SignatureGenerator $signatureGenerator,
         string $signatureEncoding = Signature::BASE64
     ) {
         $this->signatureGenerator = $signatureGenerator;
