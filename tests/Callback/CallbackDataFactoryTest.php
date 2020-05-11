@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackDataFactory;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackPaymentData;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackReversalData;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\CardholderData;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureException;
@@ -101,5 +102,65 @@ class CallbackDataFactoryTest extends TestCase
         $this->expectExceptionMessage('Payment with ID "12343498" has invalid signature.');
 
         $payment = $callbackDataFactory->fromArray($data);
+    }
+
+    public function testAddsCardholderDataIfDataPresent()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '0',
+            'fn' => 'Oleg',
+            'ln' => 'Voronkovich',
+            'email' => 'oleg-voronkovich@yandex.ru',
+            'phone' => '+79999999999',
+            'cntr' => 'Russia',
+            'city' => 'Petrozavodsk',
+            'addr' => 'Baker st. 221B',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
+        ];
+
+        $payment = $callbackDataFactory->fromArray($data);
+
+        $cardholder = $payment->getCardholderData();
+
+        $this->assertInstanceOf(CardholderData::class, $cardholder);
+        $this->assertEquals('Oleg', $cardholder->getFirstName());
+        $this->assertEquals('Voronkovich', $cardholder->getLastName());
+        $this->assertEquals('oleg-voronkovich@yandex.ru', $cardholder->getEmail());
+        $this->assertEquals('+79999999999', $cardholder->getPhone());
+        $this->assertEquals('Russia', $cardholder->getCountry());
+        $this->assertEquals('Petrozavodsk', $cardholder->getCity());
+        $this->assertEquals('Baker st. 221B', $cardholder->getAddress());
+    }
+
+    public function testUsesNullForCardholderDataIfDataNotPresent()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '0',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
+        ];
+
+        $payment = $callbackDataFactory->fromArray($data);
+
+        $this->assertNull($payment->getCardholderData());
     }
 }

@@ -29,25 +29,30 @@ class CallbackDataFactory
 
         $this->checkSignature($data);
 
+        $id = $data['descr'];
         $amount = AmountConverter::forCallback()->formattedToMinor($data['amt']);
+        $transactionId = $data['id'];
+        $transactionDate = new \DateTime($data['date']);
+        $transactionResult = $data['result'];
 
         switch ($data['type']) {
             case self::TYPE_PAYMENT:
                 return new CallbackPaymentData(
-                    $data['descr'],
+                    $id,
                     $amount,
-                    $data['id'],
-                    new \DateTime($data['date']),
-                    $data['result']
+                    $transactionId,
+                    $transactionDate,
+                    $transactionResult,
+                    $this->getCardholderData($data)
                 );
                 break;
             case self::TYPE_REVERSAL:
                 return new CallbackReversalData(
-                    $data['descr'],
+                    $id,
                     $amount,
-                    $data['id'],
-                    new \DateTime($data['date']),
-                    $data['result']
+                    $transactionId,
+                    $transactionDate,
+                    $transactionResult
                 );
                 break;
             default:
@@ -65,5 +70,23 @@ class CallbackDataFactory
                 $data['descr']
             ));
         }
+    }
+
+    public function getCardholderData(array $data): ?CardholderData
+    {
+        $cardholderKeys = [ 'fn', 'ln', 'email', 'phone', 'cntr', 'city', 'address' ];
+        if (!\array_intersect(\array_keys($data), $cardholderKeys)) {
+            return null;
+        }
+
+        return new CardholderData(
+            $data['fn'] ?? null,
+            $data['ln'] ?? null,
+            $data['email'] ?? null,
+            $data['phone'] ?? null,
+            $data['cntr'] ?? null,
+            $data['city'] ?? null,
+            $data['addr'] ?? null
+        );
     }
 }
