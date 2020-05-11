@@ -37,7 +37,7 @@ class CallbackDataFactory
 
         switch ($data['type']) {
             case self::TYPE_PAYMENT:
-                return new CallbackPaymentData(
+                return new PaymentData(
                     $id,
                     $amount,
                     $transactionId,
@@ -47,7 +47,7 @@ class CallbackDataFactory
                 );
                 break;
             case self::TYPE_REVERSAL:
-                return new CallbackReversalData(
+                return new ReversalData(
                     $id,
                     $amount,
                     $transactionId,

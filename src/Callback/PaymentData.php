@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
-class CallbackPaymentData extends CallbackData
+class PaymentData extends CallbackData
 {
     private $cardholder;
 

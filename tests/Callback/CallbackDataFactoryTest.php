@@ -6,9 +6,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Callback;
 
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackDataFactory;
-use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackPaymentData;
-use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackReversalData;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CardholderData;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\PaymentData;
+use Voronkovich\RaiffeisenBankAcquiring\Callback\ReversalData;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureException;
@@ -35,7 +35,7 @@ class CallbackDataFactoryTest extends TestCase
 
         $payment = $callbackDataFactory->fromArray($data);
 
-        $this->assertInstanceOf(CallbackPaymentData::class, $payment);
+        $this->assertInstanceOf(PaymentData::class, $payment);
         $this->assertEquals('12343498', $payment->getId());
         $this->assertEquals(23433, $payment->getAmount());
         $this->assertEquals('4873558', $payment->getTransactionId());
@@ -62,7 +62,7 @@ class CallbackDataFactoryTest extends TestCase
 
         $reversal = $callbackDataFactory->fromArray($data);
 
-        $this->assertInstanceOf(CallbackReversalData::class, $reversal);
+        $this->assertInstanceOf(ReversalData::class, $reversal);
         $this->assertEquals('123456789', $reversal->getId());
         $this->assertEquals('10010', $reversal->getAmount());
         $this->assertEquals('4873558', $reversal->getTransactionId());
