@@ -6,9 +6,10 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
 class PaymentData extends CallbackData
 {
+    private $authorizationCode;
+    private $errorMessage;
     private $currency;
     private $convertedAmount;
-    private $authorizationCode;
     private $cardholder;
 
     public function __construct(
@@ -18,6 +19,7 @@ class PaymentData extends CallbackData
         \DateTime $date,
         string $result,
         ?string $authorizationCode,
+        ?string $errorMessage,
         ?int $currency = null,
         ?int $convertedAmount = null,
         ?CardholderData $cardholder = null
@@ -25,9 +27,20 @@ class PaymentData extends CallbackData
         parent::__construct($id, $amount, $transactionId, $date, $result);
 
         $this->authorizationCode = $authorizationCode;
+        $this->errorMessage = $errorMessage;
         $this->currency = $currency;
         $this->convertedAmount = $convertedAmount;
         $this->cardholder = $cardholder;
+    }
+
+    public function getAuthorizationCode(): ?string
+    {
+        return $this->authorizationCode;
+    }
+
+    public function getErrorMessage(): ?string
+    {
+        return $this->errorMessage;
     }
 
     public function getCurrency(): ?int
@@ -38,11 +51,6 @@ class PaymentData extends CallbackData
     public function getConvertedAmount(): ?int
     {
         return $this->convertedAmount;
-    }
-
-    public function getAuthorizationCode(): ?string
-    {
-        return $this->authorizationCode;
     }
 
     public function getCardholderData(): ?CardholderData

@@ -72,6 +72,30 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals(23433, $payment->getConvertedAmount());
     }
 
+    public function testSetsErrorMessageIfPaymentFailed()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'comment' => 'Card number does not exist',
+            'result' => '1',
+            'hmac' => 'LihtgSPdLNHc5GAkBqGwa/QdHJVN40QSZM5efOyQ0AY=',
+        ];
+
+        $payment = $callbackDataFactory->fromArray($data);
+
+        $this->assertFalse($payment->isSuccessfull());
+        $this->assertEquals('Card number does not exist', $payment->getErrorMessage());
+    }
+
     public function testCreatesReversalCallbackDataFromArray()
     {
         // Base64 encoded 'secret' string

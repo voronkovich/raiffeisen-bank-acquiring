@@ -39,11 +39,15 @@ class CallbackDataFactory
 
         switch ($data['type']) {
             case self::TYPE_PAYMENT:
+                $authorizationCode = null;
+                $errorMessage = null;
                 $currency = null;
                 $convertedAmount = null;
 
                 if (PaymentData::SUCCESS === $transactionResult) {
                     $authorizationCode = $data['comment'];
+                } else {
+                    $errorMessage = $data['comment'];
                 }
 
                 if (isset($data['ccode'])) {
@@ -60,6 +64,7 @@ class CallbackDataFactory
                     $transactionDate,
                     $transactionResult,
                     $authorizationCode,
+                    $errorMessage,
                     $currency,
                     $convertedAmount,
                     $cardholder
