@@ -10,7 +10,6 @@ use Voronkovich\RaiffeisenBankAcquiring\Callback\CardholderData;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\PaymentData;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\ReversalData;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
-use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureException;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
@@ -218,5 +217,29 @@ class CallbackDataFactoryTest extends TestCase
         $payment = $callbackDataFactory->fromArray($data);
 
         $this->assertNull($payment->getCardholderData());
+    }
+
+    public function testThrowsExceptionIfCallbackTypeNotSupported()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_foo',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
+            'result' => '0',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
+        ];
+
+        $this->expectException(InvalidCallbackDataException::class);
+        $this->expectExceptionMessage('Callback type "conf_foo" is not supported.');
+
+        $payment = $callbackDataFactory->fromArray($data);
     }
 }

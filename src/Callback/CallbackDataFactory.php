@@ -29,6 +29,8 @@ class CallbackDataFactory
             throw new InvalidCallbackDataException('Callback parameter "type" is not defined.');
         }
 
+        $callbackType = $data['type'];
+
         $this->checkSignature($data);
 
         $id = $data['descr'];
@@ -37,7 +39,7 @@ class CallbackDataFactory
         $transactionDate = new \DateTime($data['date']);
         $transactionResult = $data['result'];
 
-        switch ($data['type']) {
+        switch ($callbackType) {
             case self::TYPE_PAYMENT:
                 $authorizationCode = null;
                 $errorMessage = null;
@@ -80,6 +82,7 @@ class CallbackDataFactory
                 );
                 break;
             default:
+                throw new InvalidCallbackDataException(\sprintf('Callback type "%s" is not supported.', $callbackType));
                 break;
         }
     }
