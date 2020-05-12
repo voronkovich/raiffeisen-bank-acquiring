@@ -43,6 +43,32 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertTrue($payment->isSuccessfull());
     }
 
+    public function testSupportsPaymentsWithCurrencyConversion()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'camt' => '3,00',
+            'ccode' => '840',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '0',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
+        ];
+
+        $payment = $callbackDataFactory->fromArray($data);
+
+        $this->assertEquals(300, $payment->getAmount());
+        $this->assertEquals(840, $payment->getCurrency());
+        $this->assertEquals(23433, $payment->getConvertedAmount());
+    }
+
     public function testCreatesReversalCallbackDataFromArray()
     {
         // Base64 encoded 'secret' string

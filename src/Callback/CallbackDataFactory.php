@@ -15,10 +15,12 @@ class CallbackDataFactory
     private const TYPE_REVERSAL = 'conf_reversal';
 
     private $signatureGenerator;
+    private $amountConverter;
 
     public function __construct(SignatureGenerator $signatureGenerator)
     {
         $this->signatureGenerator = $signatureGenerator;
+        $this->amountConverter = AmountConverter::forCallback();
     }
 
     public function fromArray(array $data): CallbackData
@@ -30,20 +32,32 @@ class CallbackDataFactory
         $this->checkSignature($data);
 
         $id = $data['descr'];
-        $amount = AmountConverter::forCallback()->formattedToMinor($data['amt']);
+        $amount = $this->amountConverter->formattedToMinor($data['camt'] ?? $data['amt']);
         $transactionId = $data['id'];
         $transactionDate = new \DateTime($data['date']);
         $transactionResult = $data['result'];
 
         switch ($data['type']) {
             case self::TYPE_PAYMENT:
+                $currency = null;
+                $convertedAmount = null;
+
+                if (isset($data['ccode'])) {
+                    $currency = (int) $data['ccode'];
+                    $convertedAmount = $this->amountConverter->formattedToMinor($data['amt']);
+                }
+
+                $cardholder = $this->getCardholderData($data);
+
                 return new PaymentData(
                     $id,
                     $amount,
                     $transactionId,
                     $transactionDate,
                     $transactionResult,
-                    $this->getCardholderData($data)
+                    $currency,
+                    $convertedAmount,
+                    $cardholder
                 );
                 break;
             case self::TYPE_REVERSAL:
