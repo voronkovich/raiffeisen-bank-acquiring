@@ -29,6 +29,7 @@ class CallbackDataFactoryTest extends TestCase
             'descr' => '12343498',
             'amt' => '234,33',
             'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
             'result' => '0',
             'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
         ];
@@ -40,6 +41,7 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals(23433, $payment->getAmount());
         $this->assertEquals('4873558', $payment->getTransactionId());
         $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $payment->getDate());
+        $this->assertEquals('207732', $payment->getAuthorizationCode());
         $this->assertTrue($payment->isSuccessfull());
     }
 
@@ -58,6 +60,7 @@ class CallbackDataFactoryTest extends TestCase
             'camt' => '3,00',
             'ccode' => '840',
             'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
             'result' => '0',
             'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
         ];
@@ -120,6 +123,7 @@ class CallbackDataFactoryTest extends TestCase
             'descr' => '12343498',
             'amt' => '234,33',
             'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
             'result' => '0',
             'hmac' => 'invalid',
         ];
@@ -143,6 +147,7 @@ class CallbackDataFactoryTest extends TestCase
             'descr' => '12343498',
             'amt' => '234,33',
             'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
             'result' => '0',
             'fn' => 'Oleg',
             'ln' => 'Voronkovich',
@@ -181,6 +186,7 @@ class CallbackDataFactoryTest extends TestCase
             'descr' => '12343498',
             'amt' => '234,33',
             'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
             'result' => '0',
             'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
         ];

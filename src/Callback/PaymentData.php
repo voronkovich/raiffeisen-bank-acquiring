@@ -8,6 +8,7 @@ class PaymentData extends CallbackData
 {
     private $currency;
     private $convertedAmount;
+    private $authorizationCode;
     private $cardholder;
 
     public function __construct(
@@ -16,12 +17,14 @@ class PaymentData extends CallbackData
         string $transactionId,
         \DateTime $date,
         string $result,
+        ?string $authorizationCode,
         ?int $currency = null,
         ?int $convertedAmount = null,
         ?CardholderData $cardholder = null
     ) {
         parent::__construct($id, $amount, $transactionId, $date, $result);
 
+        $this->authorizationCode = $authorizationCode;
         $this->currency = $currency;
         $this->convertedAmount = $convertedAmount;
         $this->cardholder = $cardholder;
@@ -35,6 +38,11 @@ class PaymentData extends CallbackData
     public function getConvertedAmount(): ?int
     {
         return $this->convertedAmount;
+    }
+
+    public function getAuthorizationCode(): ?string
+    {
+        return $this->authorizationCode;
     }
 
     public function getCardholderData(): ?CardholderData

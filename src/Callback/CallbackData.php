@@ -6,7 +6,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
 abstract class CallbackData
 {
-    protected const SUCCESS = '0';
+    public const SUCCESS = '0';
 
     private $id;
     private $amount;

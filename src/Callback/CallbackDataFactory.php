@@ -42,6 +42,10 @@ class CallbackDataFactory
                 $currency = null;
                 $convertedAmount = null;
 
+                if (PaymentData::SUCCESS === $transactionResult) {
+                    $authorizationCode = $data['comment'];
+                }
+
                 if (isset($data['ccode'])) {
                     $currency = (int) $data['ccode'];
                     $convertedAmount = $this->amountConverter->formattedToMinor($data['amt']);
@@ -55,6 +59,7 @@ class CallbackDataFactory
                     $transactionId,
                     $transactionDate,
                     $transactionResult,
+                    $authorizationCode,
                     $currency,
                     $convertedAmount,
                     $cardholder
