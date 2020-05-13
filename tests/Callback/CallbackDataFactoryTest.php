@@ -123,7 +123,32 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals('4873558', $reversal->getTransactionId());
         $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $reversal->getDate());
         $this->assertNull($reversal->getErrorCode());
+        $this->assertNull($reversal->getErrorMessage());
         $this->assertTrue($reversal->isSuccessfull());
+    }
+
+    public function testSetsErrorMessageIfReversalFailed()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_reversal',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '4',
+            'hmac' => 'SVuknextFs8KpiCbBv6u/6dXzpRO/quiCfdU2q3np5E=',
+        ];
+
+        $reversal = $callbackDataFactory->fromArray($data);
+
+        $this->assertFalse($reversal->isSuccessfull());
+        $this->assertEquals(4, $reversal->getErrorCode());
+        $this->assertEquals('Transaction already reversed', $reversal->getErrorMessage());
     }
 
     public function testAddsCardholderDataIfDataPresent()

@@ -11,19 +11,22 @@ abstract class CallbackData
     private $transactionId;
     private $date;
     private $errorCode;
+    private $errorMessage;
 
     public function __construct(
         string $id,
         int $amount,
         string $transactionId,
         \DateTime $date,
-        ?int $errorCode
+        ?int $errorCode,
+        ?string $errorMessage
     ) {
         $this->id = $id;
         $this->amount = $amount;
         $this->transactionId = $transactionId;
         $this->date = $date;
         $this->errorCode = $errorCode;
+        $this->errorMessage = $errorMessage;
     }
 
     public function getId(): string
@@ -49,6 +52,11 @@ abstract class CallbackData
     public function getErrorCode(): ?int
     {
         return $this->errorCode;
+    }
+
+    public function getErrorMessage(): ?string
+    {
+        return $this->errorMessage;
     }
 
     public function isSuccessfull(): bool

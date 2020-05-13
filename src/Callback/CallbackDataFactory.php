@@ -115,12 +115,15 @@ class CallbackDataFactory
         ?int $errorCode,
         array $data
     ): ReversalData {
+        $errorMessage = null !== $errorCode ? ReversalData::errorCodeToMessage($errorCode) : null;
+
         return new ReversalData(
             $id,
             $amount,
             $transactionId,
             $transactionDate,
-            $errorCode
+            $errorCode,
+            $errorMessage
         );
     }
 
