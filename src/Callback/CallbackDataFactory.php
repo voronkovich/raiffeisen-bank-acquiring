@@ -101,7 +101,9 @@ class CallbackDataFactory
             $authorizationCode,
             $currency,
             $convertedAmount,
-            $cardholder
+            $cardholder,
+            $data['ext1'] ?? null,
+            $data['ext2'] ?? null
         );
     }
 
