@@ -98,59 +98,6 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals('Card number does not exist', $payment->getErrorMessage());
     }
 
-    public function testCreatesReversalCallbackDataFromArray()
-    {
-        // Base64 encoded 'secret' string
-        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
-
-        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
-
-        $data = [
-            'type' => 'conf_reversal',
-            'id' => '4873558',
-            'descr' => '123456789',
-            'amt' => '100,10',
-            'date' => '2011-12-25 16:05:24',
-            'result' => '0',
-            'hmac' => 'yRaZgBLGCuba/xHM8rt+NhsyEOilP9bvBeULKOZIf0I=',
-        ];
-
-        $reversal = $callbackDataFactory->fromArray($data);
-
-        $this->assertInstanceOf(ReversalData::class, $reversal);
-        $this->assertEquals('123456789', $reversal->getId());
-        $this->assertEquals('10010', $reversal->getAmount());
-        $this->assertEquals('4873558', $reversal->getTransactionId());
-        $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $reversal->getDate());
-        $this->assertNull($reversal->getErrorCode());
-        $this->assertNull($reversal->getErrorMessage());
-        $this->assertTrue($reversal->isSuccessfull());
-    }
-
-    public function testSetsErrorMessageIfReversalFailed()
-    {
-        // Base64 encoded 'secret' string
-        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
-
-        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
-
-        $data = [
-            'type' => 'conf_reversal',
-            'id' => '4873558',
-            'descr' => '12343498',
-            'amt' => '234,33',
-            'date' => '2011-12-25 16:05:24',
-            'result' => '4',
-            'hmac' => 'SVuknextFs8KpiCbBv6u/6dXzpRO/quiCfdU2q3np5E=',
-        ];
-
-        $reversal = $callbackDataFactory->fromArray($data);
-
-        $this->assertFalse($reversal->isSuccessfull());
-        $this->assertEquals(4, $reversal->getErrorCode());
-        $this->assertEquals('Transaction already reversed', $reversal->getErrorMessage());
-    }
-
     public function testAddsCardholderDataIfDataPresent()
     {
         // Base64 encoded 'secret' string
@@ -237,6 +184,59 @@ class CallbackDataFactoryTest extends TestCase
 
         $this->assertEquals('First', $payment->getExt1());
         $this->assertEquals('Second', $payment->getExt2());
+    }
+
+    public function testCreatesReversalCallbackDataFromArray()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_reversal',
+            'id' => '4873558',
+            'descr' => '123456789',
+            'amt' => '100,10',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '0',
+            'hmac' => 'yRaZgBLGCuba/xHM8rt+NhsyEOilP9bvBeULKOZIf0I=',
+        ];
+
+        $reversal = $callbackDataFactory->fromArray($data);
+
+        $this->assertInstanceOf(ReversalData::class, $reversal);
+        $this->assertEquals('123456789', $reversal->getId());
+        $this->assertEquals('10010', $reversal->getAmount());
+        $this->assertEquals('4873558', $reversal->getTransactionId());
+        $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $reversal->getDate());
+        $this->assertNull($reversal->getErrorCode());
+        $this->assertNull($reversal->getErrorMessage());
+        $this->assertTrue($reversal->isSuccessfull());
+    }
+
+    public function testSetsErrorMessageIfReversalFailed()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_reversal',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'result' => '4',
+            'hmac' => 'SVuknextFs8KpiCbBv6u/6dXzpRO/quiCfdU2q3np5E=',
+        ];
+
+        $reversal = $callbackDataFactory->fromArray($data);
+
+        $this->assertFalse($reversal->isSuccessfull());
+        $this->assertEquals(4, $reversal->getErrorCode());
+        $this->assertEquals('Transaction already reversed', $reversal->getErrorMessage());
     }
 
     public function testThrowsExceptionIfSignatureIsInvalid()
