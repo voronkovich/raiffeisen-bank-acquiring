@@ -41,55 +41,88 @@ class CallbackDataFactory
 
         switch ($callbackType) {
             case self::TYPE_PAYMENT:
-                $authorizationCode = null;
-                $errorMessage = null;
-                $currency = null;
-                $convertedAmount = null;
-
-                if (PaymentData::SUCCESS === $transactionResult) {
-                    $authorizationCode = $data['comment'];
-                } else {
-                    $errorMessage = $data['comment'];
-                }
-
-                if (isset($data['ccode'])) {
-                    $currency = (int) $data['ccode'];
-                    $convertedAmount = $this->amountConverter->formattedToMinor($data['amt']);
-                }
-
-                $cardholder = $this->getCardholderData($data);
-
-                return new PaymentData(
+                return $this->createPaymentCallback(
                     $id,
                     $amount,
                     $transactionId,
                     $transactionDate,
                     $transactionResult,
-                    $authorizationCode,
-                    $errorMessage,
-                    $currency,
-                    $convertedAmount,
-                    $cardholder
+                    $data
                 );
-                break;
             case self::TYPE_REVERSAL:
-                return new ReversalData(
+                return $this->createReversalCallback(
                     $id,
                     $amount,
                     $transactionId,
                     $transactionDate,
-                    $transactionResult
+                    $transactionResult,
+                    $data
                 );
-                break;
-            default:
-                throw new InvalidCallbackDataException(\sprintf('Callback type "%s" is not supported.', $callbackType));
-                break;
         }
+
+        throw new InvalidCallbackDataException(\sprintf('Callback type "%s" is not supported.', $callbackType));
+    }
+
+    private function createPaymentCallback(
+        string $id,
+        int $amount,
+        string $transactionId,
+        \DateTimeInterface $transactionDate,
+        string $transactionResult,
+        array $data
+    ): PaymentData {
+        $authorizationCode = null;
+        $errorMessage = null;
+        $currency = null;
+        $convertedAmount = null;
+
+        if (PaymentData::SUCCESS === $transactionResult) {
+            $authorizationCode = $data['comment'];
+        } else {
+            $errorMessage = $data['comment'];
+        }
+
+        if (isset($data['ccode'])) {
+            $currency = (int) $data['ccode'];
+            $convertedAmount = $this->amountConverter->formattedToMinor($data['amt']);
+        }
+
+        $cardholder = $this->getCardholderData($data);
+
+        return new PaymentData(
+            $id,
+            $amount,
+            $transactionId,
+            $transactionDate,
+            $transactionResult,
+            $authorizationCode,
+            $errorMessage,
+            $currency,
+            $convertedAmount,
+            $cardholder
+        );
+    }
+
+    private function createReversalCallback(
+        string $id,
+        int $amount,
+        string $transactionId,
+        \DateTimeInterface $transactionDate,
+        string $transactionResult,
+        array $data
+    ): ReversalData {
+        return new ReversalData(
+            $id,
+            $amount,
+            $transactionId,
+            $transactionDate,
+            $transactionResult
+        );
     }
 
     private function checkSignature(array $data): void
     {
-        $signature = $this->signatureGenerator->callback($data['descr'], $data['amt'], $data['result']);
+        $signature = $this->signatureGenerator->generate([ $data['descr'], $data['amt'], $data['result'] ]);
 
         if ($signature->base64() !== $data['hmac']) {
             throw new InvalidCallbackSignatureException(\sprintf(
@@ -99,7 +132,7 @@ class CallbackDataFactory
         }
     }
 
-    public function getCardholderData(array $data): ?CardholderData
+    private function getCardholderData(array $data): ?CardholderData
     {
         $cardholderKeys = [ 'fn', 'ln', 'email', 'phone', 'cntr', 'city', 'address' ];
         if (!\array_intersect(\array_keys($data), $cardholderKeys)) {
