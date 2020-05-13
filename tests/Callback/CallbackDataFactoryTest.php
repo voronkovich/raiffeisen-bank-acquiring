@@ -239,6 +239,38 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals('Transaction already reversed', $reversal->getErrorMessage());
     }
 
+    public function testCreatesCallbackDataFromSuperglobals()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_POST = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
+            'result' => '0',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
+        ];
+
+        $payment = $callbackDataFactory->fromglobals();
+
+        $this->assertInstanceOf(PaymentData::class, $payment);
+        $this->assertEquals('12343498', $payment->getId());
+        $this->assertEquals(23433, $payment->getAmount());
+        $this->assertEquals('4873558', $payment->getTransactionId());
+        $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $payment->getDate());
+        $this->assertEquals('207732', $payment->getAuthorizationCode());
+        $this->assertNull($payment->getErrorCode());
+        $this->assertNull($payment->getErrorMessage());
+        $this->assertTrue($payment->isSuccessfull());
+    }
+
     public function testThrowsExceptionIfSignatureIsInvalid()
     {
         $signatureGenerator = SignatureGenerator::base64('xxx');

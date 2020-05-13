@@ -25,6 +25,22 @@ class CallbackDataFactory
         $this->amountConverter = AmountConverter::forCallback();
     }
 
+    public function fromGlobals(): CallbackData
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        switch ($method) {
+            case 'GET':
+                return $this->fromArray($_GET);
+            case 'POST':
+                return $this->fromArray($_POST);
+        }
+
+        throw new \RuntimeException(
+            \sprintf('HTTP method "%s" not supported. Supported methods: "GET" and "POST".', $method)
+        );
+    }
+
     public function fromArray(array $data): CallbackData
     {
         if (!isset($data['type'])) {
