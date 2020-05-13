@@ -126,41 +126,6 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertTrue($reversal->isSuccessfull());
     }
 
-    public function testThrowsExceptionIfCallbackTypeIsNotDefined()
-    {
-        // Base64 encoded 'secret' string
-        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
-
-        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
-
-        $this->expectException(InvalidCallbackDataException::class);
-        $this->expectExceptionMessage('Callback parameter "type" is not defined.');
-
-        $callbackDataFactory->fromArray([]);
-    }
-
-    public function testThrowsExceptionIfSignatureIsInvalid()
-    {
-        $signatureGenerator = SignatureGenerator::base64('xxx');
-        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
-
-        $data = [
-            'type' => 'conf_pay',
-            'id' => '4873558',
-            'descr' => '12343498',
-            'amt' => '234,33',
-            'date' => '2011-12-25 16:05:24',
-            'comment' => '207732',
-            'result' => '0',
-            'hmac' => 'invalid',
-        ];
-
-        $this->expectException(InvalidCallbackSignatureException::class);
-        $this->expectExceptionMessage('Payment with ID "12343498" has invalid signature.');
-
-        $payment = $callbackDataFactory->fromArray($data);
-    }
-
     public function testAddsCardholderDataIfDataPresent()
     {
         // Base64 encoded 'secret' string
@@ -247,6 +212,41 @@ class CallbackDataFactoryTest extends TestCase
 
         $this->assertEquals('First', $payment->getExt1());
         $this->assertEquals('Second', $payment->getExt2());
+    }
+
+    public function testThrowsExceptionIfSignatureIsInvalid()
+    {
+        $signatureGenerator = SignatureGenerator::base64('xxx');
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $data = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
+            'result' => '0',
+            'hmac' => 'invalid',
+        ];
+
+        $this->expectException(InvalidCallbackSignatureException::class);
+        $this->expectExceptionMessage('Payment with ID "12343498" has invalid signature.');
+
+        $payment = $callbackDataFactory->fromArray($data);
+    }
+
+    public function testThrowsExceptionIfCallbackTypeIsNotDefined()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $this->expectException(InvalidCallbackDataException::class);
+        $this->expectExceptionMessage('Callback parameter "type" is not defined.');
+
+        $callbackDataFactory->fromArray([]);
     }
 
     public function testThrowsExceptionIfCallbackTypeNotSupported()
