@@ -41,6 +41,8 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals('4873558', $payment->getTransactionId());
         $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $payment->getDate());
         $this->assertEquals('207732', $payment->getAuthorizationCode());
+        $this->assertNull($payment->getErrorCode());
+        $this->assertNull($payment->getErrorMessage());
         $this->assertTrue($payment->isSuccessfull());
     }
 
@@ -92,6 +94,7 @@ class CallbackDataFactoryTest extends TestCase
         $payment = $callbackDataFactory->fromArray($data);
 
         $this->assertFalse($payment->isSuccessfull());
+        $this->assertEquals(1, $payment->getErrorCode());
         $this->assertEquals('Card number does not exist', $payment->getErrorMessage());
     }
 
@@ -119,6 +122,7 @@ class CallbackDataFactoryTest extends TestCase
         $this->assertEquals('10010', $reversal->getAmount());
         $this->assertEquals('4873558', $reversal->getTransactionId());
         $this->assertEquals(new \DateTime('2011-12-25 16:05:24'), $reversal->getDate());
+        $this->assertNull($reversal->getErrorCode());
         $this->assertTrue($reversal->isSuccessfull());
     }
 

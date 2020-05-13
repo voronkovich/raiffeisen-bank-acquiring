@@ -14,6 +14,8 @@ class CallbackDataFactory
     private const TYPE_PAYMENT = 'conf_pay';
     private const TYPE_REVERSAL = 'conf_reversal';
 
+    private const SUCCESS = '0';
+
     private $signatureGenerator;
     private $amountConverter;
 
@@ -37,7 +39,7 @@ class CallbackDataFactory
         $amount = $this->amountConverter->formattedToMinor($data['camt'] ?? $data['amt']);
         $transactionId = $data['id'];
         $transactionDate = new \DateTime($data['date']);
-        $transactionResult = $data['result'];
+        $errorCode = self::SUCCESS !== $data['result'] ? (int) $data['result'] : null;
 
         switch ($callbackType) {
             case self::TYPE_PAYMENT:
@@ -46,7 +48,7 @@ class CallbackDataFactory
                     $amount,
                     $transactionId,
                     $transactionDate,
-                    $transactionResult,
+                    $errorCode,
                     $data
                 );
             case self::TYPE_REVERSAL:
@@ -55,7 +57,7 @@ class CallbackDataFactory
                     $amount,
                     $transactionId,
                     $transactionDate,
-                    $transactionResult,
+                    $errorCode,
                     $data
                 );
         }
@@ -68,7 +70,7 @@ class CallbackDataFactory
         int $amount,
         string $transactionId,
         \DateTimeInterface $transactionDate,
-        string $transactionResult,
+        ?int $errorCode,
         array $data
     ): PaymentData {
         $authorizationCode = null;
@@ -76,7 +78,7 @@ class CallbackDataFactory
         $currency = null;
         $convertedAmount = null;
 
-        if (PaymentData::SUCCESS === $transactionResult) {
+        if (null === $errorCode) {
             $authorizationCode = $data['comment'];
         } else {
             $errorMessage = $data['comment'];
@@ -94,9 +96,9 @@ class CallbackDataFactory
             $amount,
             $transactionId,
             $transactionDate,
-            $transactionResult,
-            $authorizationCode,
+            $errorCode,
             $errorMessage,
+            $authorizationCode,
             $currency,
             $convertedAmount,
             $cardholder
@@ -108,7 +110,7 @@ class CallbackDataFactory
         int $amount,
         string $transactionId,
         \DateTimeInterface $transactionDate,
-        string $transactionResult,
+        ?int $errorCode,
         array $data
     ): ReversalData {
         return new ReversalData(
@@ -116,7 +118,7 @@ class CallbackDataFactory
             $amount,
             $transactionId,
             $transactionDate,
-            $transactionResult
+            $errorCode
         );
     }
 

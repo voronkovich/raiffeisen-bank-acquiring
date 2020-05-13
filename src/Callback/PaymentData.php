@@ -17,17 +17,17 @@ class PaymentData extends CallbackData
         int $amount,
         string $transactionId,
         \DateTime $date,
-        string $result,
-        ?string $authorizationCode,
+        ?int $errorCode,
         ?string $errorMessage,
+        ?string $authorizationCode,
         ?int $currency = null,
         ?int $convertedAmount = null,
         ?CardholderData $cardholder = null
     ) {
-        parent::__construct($id, $amount, $transactionId, $date, $result);
+        parent::__construct($id, $amount, $transactionId, $date, $errorCode);
 
-        $this->authorizationCode = $authorizationCode;
         $this->errorMessage = $errorMessage;
+        $this->authorizationCode = $authorizationCode;
         $this->currency = $currency;
         $this->convertedAmount = $convertedAmount;
         $this->cardholder = $cardholder;

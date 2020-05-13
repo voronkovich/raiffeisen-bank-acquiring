@@ -6,26 +6,24 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
 abstract class CallbackData
 {
-    public const SUCCESS = '0';
-
     private $id;
     private $amount;
     private $transactionId;
     private $date;
-    private $result;
+    private $errorCode;
 
     public function __construct(
         string $id,
         int $amount,
         string $transactionId,
         \DateTime $date,
-        string $result
+        ?int $errorCode
     ) {
         $this->id = $id;
         $this->amount = $amount;
         $this->transactionId = $transactionId;
         $this->date = $date;
-        $this->result = $result;
+        $this->errorCode = $errorCode;
     }
 
     public function getId(): string
@@ -48,13 +46,13 @@ abstract class CallbackData
         return $this->date;
     }
 
-    public function getResult(): string
+    public function getErrorCode(): ?int
     {
-        return $this->result;
+        return $this->errorCode;
     }
 
     public function isSuccessfull(): bool
     {
-        return self::SUCCESS === $this->result;
+        return null === $this->errorCode;
     }
 }
