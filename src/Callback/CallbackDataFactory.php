@@ -145,7 +145,7 @@ class CallbackDataFactory
 
     private function checkSignature(array $data): void
     {
-        $signature = $this->signatureGenerator->generate([ $data['descr'], $data['amt'], $data['result'] ]);
+        $signature = $this->signatureGenerator->generateCallbackSignature($data);
 
         if ($signature->base64() !== $data['hmac']) {
             throw new InvalidCallbackSignatureException(\sprintf(

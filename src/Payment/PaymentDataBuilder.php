@@ -6,6 +6,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
 use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RequiredParameterMissingException;
+use Voronkovich\RaiffeisenBankAcquiring\MerchantIdFormatter;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\Signature;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
@@ -222,7 +223,7 @@ class PaymentDataBuilder
         $data = [
             'PurchaseDesc' => $this->id,
             'PurchaseAmt' => AmountConverter::forPayment()->minorToFormatted($this->amount),
-            'MerchantID' => \sprintf('00000%s-%s', $this->merchantId, $this->terminalId),
+            'MerchantID' => MerchantIdFormatter::format($this->merchantId, $this->terminalId),
             'MerchantName' => $this->merchantName,
             'CountryCode' => $this->merchantCountry,
             'CurrencyCode' => $this->merchantCurrency,
@@ -348,36 +349,13 @@ class PaymentDataBuilder
 
     private function addSignature(array &$data): void
     {
-        if (null !== $this->signatureGenerator) {
-            $signature = $this->generateSignature($data);
-            $data['HMAC'] = $signature->getValue($this->signatureEncoding);
+        $signature = $this->signatureGenerator->generatePaymentSignature($data);
 
-            if (Signature::HEX === $this->signatureEncoding) {
-                $data['Options'] = 'H'.($data['Options'] ?? '');
-            }
+        $data['HMAC'] = $signature->getValue($this->signatureEncoding);
+
+        if (Signature::HEX === $this->signatureEncoding) {
+            $data['Options'] = 'H'.($data['Options'] ?? '');
         }
-    }
-
-    private function generateSignature(array $data): Signature
-    {
-        $chunks = [
-            $this->merchantId,
-            $this->terminalId,
-            $data['PurchaseDesc'],
-        ];
-
-        if (isset($data['PCurrencyCode'])) {
-            $chunks[] = $data['PCurrencyCode'];
-        }
-
-        $chunks[] = $data['PPurchaseAmt'] ?? $data['PurchaseAmt'];
-
-        if (isset($data['Time']) && isset($data['Window'])) {
-            $chunks[] = $data['Time'];
-            $chunks[] = $data['Window'];
-        }
-
-        return $this->signatureGenerator->generate($chunks);
     }
 
     private function sortOptions(array &$data): void
