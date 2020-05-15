@@ -7,6 +7,7 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureException;
+use Voronkovich\RaiffeisenBankAcquiring\Exception\RuntimeException;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class CallbackDataFactory
@@ -36,7 +37,7 @@ class CallbackDataFactory
                 return $this->fromArray($_POST);
         }
 
-        throw new \RuntimeException(
+        throw new RuntimeException(
             \sprintf('HTTP method "%s" not supported. Supported methods: "GET" and "POST".', $method)
         );
     }

@@ -11,6 +11,7 @@ use Voronkovich\RaiffeisenBankAcquiring\Callback\PaymentData;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\ReversalData;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackDataException;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureException;
+use Voronkovich\RaiffeisenBankAcquiring\Exception\RuntimeException;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
 class CallbackDataFactoryTest extends TestCase
@@ -328,5 +329,30 @@ class CallbackDataFactoryTest extends TestCase
         $this->expectExceptionMessage('Callback type "conf_foo" is not supported.');
 
         $payment = $callbackDataFactory->fromArray($data);
+    }
+
+    public function testThrowsExceptionIfHttpMethodIsNotSupported()
+    {
+        // Base64 encoded 'secret' string
+        $signatureGenerator = SignatureGenerator::base64('c2VjcmV0');
+
+        $callbackDataFactory = new CallbackDataFactory($signatureGenerator);
+
+        $_SERVER['REQUEST_METHOD'] = 'PATCH';
+        $_POST = [
+            'type' => 'conf_pay',
+            'id' => '4873558',
+            'descr' => '12343498',
+            'amt' => '234,33',
+            'date' => '2011-12-25 16:05:24',
+            'comment' => '207732',
+            'result' => '0',
+            'hmac' => 'br+qOa2Utt/8hMzc9TEH/0KghkwxCDiA+xNgyNRX7Ts=',
+        ];
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('HTTP method "PATCH" not supported. Supported methods: "GET" and "POST".');
+
+        $payment = $callbackDataFactory->fromglobals();
     }
 }
