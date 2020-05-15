@@ -26,8 +26,13 @@ class AmountConverterTest extends TestCase
 
         $this->assertEquals(0, $amountConverter->formattedToMinor('0,00'));
         $this->assertEquals(1, $amountConverter->formattedToMinor('0,01'));
+        $this->assertEquals(10, $amountConverter->formattedToMinor('0,1'));
         $this->assertEquals(10, $amountConverter->formattedToMinor('0,10'));
         $this->assertEquals(99, $amountConverter->formattedToMinor('0,99'));
+        $this->assertEquals(12300, $amountConverter->formattedToMinor('123'));
+        $this->assertEquals(12300, $amountConverter->formattedToMinor('123,0'));
+        $this->assertEquals(12300, $amountConverter->formattedToMinor('123,00'));
+        $this->assertEquals(12340, $amountConverter->formattedToMinor('123,4'));
         $this->assertEquals(12345, $amountConverter->formattedToMinor('123,45'));
     }
 }

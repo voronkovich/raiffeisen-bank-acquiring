@@ -44,10 +44,15 @@ class AmountConverter
 
     public function formattedToMinor(string $amount): int
     {
-        if (!\preg_match(\sprintf('/^(\d+)%s(\d\d)$/', $this->delimiter), $amount, $chunks)) {
+        $regex = \sprintf('/^(?<major>\d+)(%s(?<minor>\d\d?))?$/', \preg_quote($this->delimiter));
+
+        if (!\preg_match($regex, $amount, $chunks)) {
             throw new InvalidArgumentException(\sprintf('Amount has invalid format: %s.', $amount));
         }
 
-        return (int) ($chunks[1].$chunks[2]);
+        $major = $chunks['major'];
+        $minor = $chunks['minor'] ?? '00';
+
+        return (int) ($major.$minor.(\strlen($minor) === 1 ? '0' : ''));
     }
 }
