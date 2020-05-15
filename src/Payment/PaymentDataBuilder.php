@@ -10,8 +10,18 @@ use Voronkovich\RaiffeisenBankAcquiring\MerchantIdFormatter;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\Signature;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
+/**
+ * Creates data array to transfer to RaiffeisenBank gateway (via HTML-form).
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class PaymentDataBuilder
 {
+    /**
+     * Payment ID.
+     *
+     * @var string
+     */
     private $id;
     private $amount;
     private $currency;
@@ -48,6 +58,9 @@ class PaymentDataBuilder
         $this->signatureEncoding = $signatureEncoding;
     }
 
+    /**
+     * Set payment identifier.
+     */
     public function setId($id): self
     {
         $this->id = $id;
@@ -55,6 +68,11 @@ class PaymentDataBuilder
         return $this;
     }
 
+    /**
+     * Set payment amount.
+     *
+     * @param $amount Amount in minor value (Example: 10 RUB = 10000)
+     */
     public function setAmount(int $amount): self
     {
         $this->amount = $amount;
@@ -62,6 +80,11 @@ class PaymentDataBuilder
         return $this;
     }
 
+    /**
+     * Set payment currency.
+     *
+     * @param $currency Currency code in ISO format
+     */
     public function setCurrency(int $currency): self
     {
         $this->currency = $currency;

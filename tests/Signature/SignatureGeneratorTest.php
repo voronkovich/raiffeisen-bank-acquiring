@@ -7,6 +7,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Signature;
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class SignatureGeneratorTest extends TestCase
 {
     public function testGeneratesBaseSignature()

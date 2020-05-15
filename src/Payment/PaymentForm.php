@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
+/**
+ * Creates an HTML form for payment.
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class PaymentForm
 {
     const PROD_URL = 'https://e-commerce.raiffeisen.ru/vsmc3ds/pay_check/3dsproxy_init.jsp';

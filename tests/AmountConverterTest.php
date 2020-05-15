@@ -7,6 +7,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
 use Voronkovich\RaiffeisenBankAcquiring\AmountConverter;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class AmountConverterTest extends TestCase
 {
     public function testConvertsFromMinorToFormattedValue()

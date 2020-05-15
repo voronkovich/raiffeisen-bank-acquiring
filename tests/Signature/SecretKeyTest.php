@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SecretKey;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class SecretKeyTest extends TestCase
 {
     /**

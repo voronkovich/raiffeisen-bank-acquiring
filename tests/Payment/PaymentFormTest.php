@@ -7,6 +7,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests;
 use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentForm;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class PaymentFormTest extends TestCase
 {
     public function testRendersHtmlFormForPaymentData()

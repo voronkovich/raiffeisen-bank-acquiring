@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
 use Voronkovich\RaiffeisenBankAcquiring\MerchantIdFormatter;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class MerchantIdFormatterTest extends TestCase
 {
     public function testFormatsMerchantIdForPaymentData()

@@ -6,6 +6,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Signature;
 
 use Voronkovich\RaiffeisenBankAcquiring\MerchantIdFormatter;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class SignatureGenerator
 {
     private $key;

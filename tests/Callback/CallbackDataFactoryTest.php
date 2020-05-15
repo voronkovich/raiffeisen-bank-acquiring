@@ -14,6 +14,9 @@ use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureExcept
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RuntimeException;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class CallbackDataFactoryTest extends TestCase
 {
     public function testCreatesPaymentCallbackDataFromArray()

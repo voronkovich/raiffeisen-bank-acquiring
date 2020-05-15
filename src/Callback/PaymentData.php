@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class PaymentData extends CallbackData
 {
     private $authorizationCode;

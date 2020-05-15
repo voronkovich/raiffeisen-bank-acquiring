@@ -6,6 +6,11 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Signature;
 
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
 
+/**
+ * Signature for payment and callback data.
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class Signature
 {
     public const BASE64 = 'base64';

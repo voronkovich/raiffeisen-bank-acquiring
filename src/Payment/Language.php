@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Payment;
 
+/**
+ * Represent languages code supported by RaiffeisenBank.
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class Language
 {
     public const RU = 'ru';

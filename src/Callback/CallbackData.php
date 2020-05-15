@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Voronkovich\RaiffeisenBankAcquiring\Callback;
 
+/**
+ * Base class for all callback data types.
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 abstract class CallbackData
 {
     private $id;

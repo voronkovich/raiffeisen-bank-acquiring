@@ -7,6 +7,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Tests\Callback;
 use Voronkovich\RaiffeisenBankAcquiring\Callback\CallbackResponse;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class CallbackResponseTest extends TestCase
 {
     public function testCreatesSuccessResponse()

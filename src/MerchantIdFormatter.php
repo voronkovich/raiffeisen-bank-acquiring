@@ -6,6 +6,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring;
 
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class MerchantIdFormatter
 {
     private const FORMAT = '00000%d-%d';

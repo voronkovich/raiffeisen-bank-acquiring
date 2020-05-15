@@ -10,6 +10,9 @@ use Voronkovich\RaiffeisenBankAcquiring\Payment\PaymentDataBuilder;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\Signature;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class PaymentDataBuilderTest extends TestCase
 {
     private const RUB = 643;

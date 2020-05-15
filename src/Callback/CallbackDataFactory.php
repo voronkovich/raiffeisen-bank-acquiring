@@ -10,6 +10,11 @@ use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidCallbackSignatureExcept
 use Voronkovich\RaiffeisenBankAcquiring\Exception\RuntimeException;
 use Voronkovich\RaiffeisenBankAcquiring\Signature\SignatureGenerator;
 
+/**
+ * Creates callback data.
+ *
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class CallbackDataFactory
 {
     private const TYPE_PAYMENT = 'conf_pay';
@@ -26,6 +31,11 @@ class CallbackDataFactory
         $this->amountConverter = AmountConverter::forCallback();
     }
 
+    /**
+     * Create callback data from superglobals ($_GET, $_POST).
+     *
+     * @throws RuntimeException if HTTP method is not supported
+     */
     public function fromGlobals(): CallbackData
     {
         $method = $_SERVER['REQUEST_METHOD'];
@@ -42,6 +52,11 @@ class CallbackDataFactory
         );
     }
 
+    /**
+     * Create callback data from array.
+     *
+     * @throws InvalidCallbackDataException
+     */
     public function fromArray(array $data): CallbackData
     {
         if (!isset($data['type'])) {

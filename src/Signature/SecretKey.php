@@ -6,6 +6,9 @@ namespace Voronkovich\RaiffeisenBankAcquiring\Signature;
 
 use Voronkovich\RaiffeisenBankAcquiring\Exception\InvalidArgumentException;
 
+/**
+ * @author Oleg Voronkovich <oleg-voronkovich@yandex.ru>
+ */
 class SecretKey
 {
     private $value;
